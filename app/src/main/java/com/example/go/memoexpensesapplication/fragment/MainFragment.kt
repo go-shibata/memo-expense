@@ -25,14 +25,11 @@ class MainFragment : Fragment(), OnRecyclerListener {
     private var recyclerView: RecyclerView? = null
     private var recyclerAdapter: RecyclerAdapter? = null
     private val data = arrayListOf(
-        Expense(RecyclerType.SECTION, "testA", null, null),
-        Expense(RecyclerType.BODY, "testA", "100", "memoA1"),
-        Expense(RecyclerType.BODY, "testA", "200", "memoA2"),
-        Expense(RecyclerType.SECTION, "testB", null, null),
-        Expense(RecyclerType.BODY, "testB", "300", "memoB1"),
-        Expense(RecyclerType.BODY, "testB", "400", "memoB2"),
-        Expense(RecyclerType.SECTION, "testC", null, null),
-        Expense(RecyclerType.BODY, "testC", "500", "memoC1")
+        Expense("testA", "100", "memoA1"),
+        Expense("testA", "200", "memoA2"),
+        Expense("testB", "300", "memoB1"),
+        Expense("testB", "400", "memoB2"),
+        Expense("testC", "500", "memoC1")
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

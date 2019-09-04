@@ -11,7 +11,6 @@ import com.example.go.memoexpensesapplication.constant.RecyclerType
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 import kotlinx.android.synthetic.main.list_item_fragment_main_body.view.*
-import kotlinx.android.synthetic.main.list_item_fragment_main_header.view.*
 import kotlinx.android.synthetic.main.list_item_fragment_main_section.view.*
 
 class RecyclerAdapter(
@@ -43,6 +42,7 @@ class RecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val data = getDataWithSection()
         // データ表示
         when (holder) {
             is BodyViewHolder -> {
@@ -65,6 +65,7 @@ class RecyclerAdapter(
     }
 
     override fun getItemCount(): Int {
+        val data = getDataWithSection()
         var count = data.size
         count += if (hasHeader) 1 else 0
         count += if (hasFooter) 1 else 0
@@ -72,6 +73,7 @@ class RecyclerAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
+        val data = getDataWithSection()
         return if (hasHeader) {
             when {
                 position == 0 -> {
@@ -102,6 +104,15 @@ class RecyclerAdapter(
 
     fun setFooter() {
         hasFooter = true
+    }
+
+    fun getDataWithSection(): ArrayList<Expense> {
+        val sortedData = ArrayList(data.sortedBy { it.tag })
+        val tagList = data.map { it.tag }.distinct()
+        for (tag in tagList) {
+            sortedData.add(sortedData.indexOfFirst { it.tag == tag }, Expense(RecyclerType.SECTION, tag, null, null))
+        }
+        return sortedData
     }
 
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

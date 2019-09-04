@@ -7,4 +7,10 @@ data class Expense(
     val tag: String?,
     val value: String?,
     val note: String?
-)
+) {
+    constructor(
+        tag: String?,
+        value: String?,
+        note: String?
+    ): this(RecyclerType.BODY, tag, value, note)
+}
