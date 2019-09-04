@@ -21,6 +21,8 @@ class RecyclerAdapter(
 ) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
+    private var hasHeader = false
+    private var hasFooter = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // 表示するレイアウトを設定
@@ -29,7 +31,7 @@ class RecyclerAdapter(
                 HeaderViewHolder(layoutInflater.inflate(R.layout.list_item_fragment_main_header, parent, false))
             }
             RecyclerType.FOOTER -> {
-                BodyViewHolder(layoutInflater.inflate(R.layout.list_item_fragment_main_body, parent, false))
+                FooterViewHolder(layoutInflater.inflate(R.layout.list_item_fragment_main_footer, parent, false))
             }
             RecyclerType.SECTION -> {
                 SectionViewHolder(layoutInflater.inflate(R.layout.list_item_fragment_main_section, parent, false))
@@ -44,39 +46,69 @@ class RecyclerAdapter(
         // データ表示
         when (holder) {
             is BodyViewHolder -> {
+                val dataPos = if (hasHeader) position - 1 else position
                 holder.apply {
-                    tagView.text = data[position].tag
-                    valueView.text = data[position].value
-                    noteView.text = data[position].note
+                    tagView.text = data[dataPos].tag
+                    valueView.text = data[dataPos].value
+                    noteView.text = data[dataPos].note
                     itemView.setOnClickListener {
-                        onRecyclerListener.onRecyclerClicked(it, position, data[position])
+                        onRecyclerListener.onRecyclerClicked(it, dataPos, data[dataPos])
                     }
                 }
             }
             is SectionViewHolder -> {
                 holder.tagView.text = data[position].tag
             }
-            is HeaderViewHolder -> {
-                holder.apply {
-                    tagView.text = data[position].tag
-                    valueView.text = data[position].value
-                    noteView.text = data[position].note
+            is HeaderViewHolder -> {}
+            is FooterViewHolder -> {}
+        }
+    }
+
+    override fun getItemCount(): Int {
+        var count = data.size
+        count += if (hasHeader) 1 else 0
+        count += if (hasFooter) 1 else 0
+        return count
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (hasHeader) {
+            when {
+                position == 0 -> {
+                    RecyclerType.HEADER.type
+                }
+                hasFooter && position == itemCount - 1 -> {
+                    RecyclerType.FOOTER.type
+                }
+                else -> {
+                    data[position - 1].type.type
+                }
+            }
+        } else {
+            when {
+                hasFooter && position == itemCount - 1 -> {
+                    RecyclerType.FOOTER.type
+                }
+                else -> {
+                    data[position].type.type
                 }
             }
         }
     }
 
-    override fun getItemCount(): Int = data.size
+    fun setHeader() {
+        hasHeader = true
+    }
 
-    override fun getItemViewType(position: Int): Int = data[position].type.type
+    fun setFooter() {
+        hasFooter = true
+    }
 
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-    class HeaderViewHolder(itemView: View) : ViewHolder(itemView) {
-        val tagView: TextView = itemView.list_item_fragment_main_header_tag
-        val valueView: TextView = itemView.list_item_fragment_main_header_value
-        val noteView: TextView = itemView.list_item_fragment_main_header_note
-    }
+    class HeaderViewHolder(itemView: View) : ViewHolder(itemView)
+
+    class FooterViewHolder(itemView: View) : ViewHolder(itemView)
 
     class BodyViewHolder(itemView: View) : ViewHolder(itemView) {
         val tagView: TextView = itemView.list_item_fragment_main_body_tag

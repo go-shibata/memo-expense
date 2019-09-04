@@ -25,7 +25,6 @@ class MainFragment : Fragment(), OnRecyclerListener {
     private var recyclerView: RecyclerView? = null
     private var recyclerAdapter: RecyclerAdapter? = null
     private val data = arrayListOf(
-        Expense(RecyclerType.HEADER, "Tag", "Value", "Note"),
         Expense(RecyclerType.SECTION, "testA", null, null),
         Expense(RecyclerType.BODY, "testA", "100", "memoA1"),
         Expense(RecyclerType.BODY, "testA", "200", "memoA2"),
@@ -52,7 +51,10 @@ class MainFragment : Fragment(), OnRecyclerListener {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = fragment_main_recycler_view
         recyclerView?.layoutManager = LinearLayoutManager(activity)
-        recyclerAdapter = RecyclerAdapter(context, data, this)
+        recyclerAdapter = RecyclerAdapter(context, data, this).apply {
+            setHeader()
+            setFooter()
+        }
         recyclerView?.adapter = recyclerAdapter
         fragment_main_floating_action_button.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.dialog_view_fragment_main_add, null, false)
