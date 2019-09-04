@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -15,6 +17,7 @@ import com.example.go.memoexpensesapplication.constant.RecyclerType
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.adapter.RecyclerAdapter
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
+import kotlinx.android.synthetic.main.dialog_view_fragment_main_add.view.*
 import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : Fragment(), OnRecyclerListener {
@@ -51,6 +54,26 @@ class MainFragment : Fragment(), OnRecyclerListener {
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerAdapter = RecyclerAdapter(context, data, this)
         recyclerView?.adapter = recyclerAdapter
+        fragment_main_floating_action_button.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.dialog_view_fragment_main_add, null, false)
+            val builder = context?.let {
+                AlertDialog.Builder(it)
+                    .setTitle(R.string.fragment_main_add_title)
+                    .setView(dialogView)
+                    .setPositiveButton(R.string.fragment_main_add_positive) { _, _ ->
+                        data.add(Expense(
+                            RecyclerType.BODY,
+                            dialogView.dialog_view_fragment_main_add_tag.text.toString(),
+                            dialogView.dialog_view_fragment_main_add_value.text.toString(),
+                            dialogView.dialog_view_fragment_main_add_note.text.toString()))
+                        Toast.makeText(context, "add", Toast.LENGTH_SHORT).show()
+                        recyclerAdapter?.notifyDataSetChanged()
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+            } ?: return@setOnClickListener
+            MyDialogFragment().setBuilder(builder)
+                .show((activity as AppCompatActivity).supportFragmentManager, null)
+        }
     }
 
     override fun onAttach(context: Context) {
