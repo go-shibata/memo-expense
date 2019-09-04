@@ -90,8 +90,18 @@ class MainFragment : Fragment(), OnRecyclerListener {
     }
 
     override fun onRecyclerClicked(v: View, position: Int, item: Expense) {
-        Toast.makeText(context, "${item.tag}: ${item.value}", Toast.LENGTH_SHORT)
-            .show()
+        val builder = context?.let {
+            AlertDialog.Builder(it)
+                .setTitle(R.string.fragment_main_remove_title)
+                .setMessage(getString(R.string.fragment_main_remove_message, item.tag, item.value))
+                .setPositiveButton(R.string.ok) { _, _ ->
+                    data.remove(item)
+                    recyclerAdapter?.notifyDataSetChanged()
+                }
+                .setNegativeButton(R.string.cancel, null)
+        } ?: return
+        MyDialogFragment().setBuilder(builder)
+            .show((activity as AppCompatActivity).supportFragmentManager, null)
     }
 
     interface OnFragmentInteractionListener {
