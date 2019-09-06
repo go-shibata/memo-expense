@@ -3,14 +3,15 @@ package com.example.go.memoexpensesapplication.model
 import com.example.go.memoexpensesapplication.constant.RecyclerType
 
 data class Expense(
+    var id: String?,
     val type: RecyclerType,
     val tag: String?,
-    val value: String?,
+    val value: Int?,
     val note: String?
 ) {
     constructor(
         tag: String?,
-        value: String?,
+        value: Int?,
         note: String?
-    ): this(RecyclerType.BODY, tag, value, note)
+    ): this(null, RecyclerType.BODY, tag, value, note)
 }

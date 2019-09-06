@@ -49,7 +49,7 @@ class RecyclerAdapter(
                 val dataPos = if (hasHeader) position - 1 else position
                 holder.apply {
                     tagView.text = data[dataPos].tag
-                    valueView.text = data[dataPos].value
+                    valueView.text = data[dataPos].value.toString()
                     noteView.text = data[dataPos].note
                     itemView.setOnClickListener {
                         onRecyclerListener.onRecyclerClicked(it, dataPos, data[dataPos])
@@ -110,7 +110,7 @@ class RecyclerAdapter(
         val sortedData = ArrayList(data.sortedBy { it.tag })
         val tagList = data.map { it.tag }.distinct()
         for (tag in tagList) {
-            sortedData.add(sortedData.indexOfFirst { it.tag == tag }, Expense(RecyclerType.SECTION, tag, null, null))
+            sortedData.add(sortedData.indexOfFirst { it.tag == tag }, Expense(null, RecyclerType.SECTION, tag, null, null))
         }
         return sortedData
     }

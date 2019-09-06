@@ -9,7 +9,7 @@
     <string name="fragment_main_add_value">金額</string>
     <string name="fragment_main_add_note">メモ</string>
     <string name="fragment_main_remove_title">要素の削除</string>
-    <string name="fragment_main_remove_message">%1$s : %2$s を削除しますか？</string>
+    <string name="fragment_main_remove_message">%1$s : %2$d を削除しますか？</string>
     <string name="fragment_main_header_tag">タグ</string>
     <string name="fragment_main_header_value">金額</string>
     <string name="fragment_main_header_note">メモ</string>

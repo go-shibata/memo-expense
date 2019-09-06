@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "814604838407",
+    "firebase_url": "https://memoexpensesapplication.firebaseio.com",
+    "project_id": "memoexpensesapplication",
+    "storage_bucket": "memoexpensesapplication.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814604838407:android:8d845650f27d753df9aca2",
+        "android_client_info": {
+          "package_name": "com.example.go.memoexpensesapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "814604838407-37oup93ialvap4fjgd5j0cvpl7dv7oe2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.go.memoexpensesapplication",
+            "certificate_hash": "fb9946df46dee43ee7259db7cdbad9b4ff74c15f"
+          }
+        },
+        {
+          "client_id": "814604838407-eishojhp31v1f2cpft3heamqeu9jjnqe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByyT7Jh_QjBtQVVBpt53jVo8rgejY4ZT4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "814604838407-eishojhp31v1f2cpft3heamqeu9jjnqe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

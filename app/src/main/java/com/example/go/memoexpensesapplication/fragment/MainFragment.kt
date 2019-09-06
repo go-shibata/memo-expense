@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.constant.RecyclerType
 import com.example.go.memoexpensesapplication.model.Expense
+import com.example.go.memoexpensesapplication.network.Database
 import com.example.go.memoexpensesapplication.view.adapter.RecyclerAdapter
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 import kotlinx.android.synthetic.main.dialog_view_fragment_main_add.view.*
@@ -24,13 +25,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
     private var listener: OnFragmentInteractionListener? = null
     private var recyclerView: RecyclerView? = null
     private var recyclerAdapter: RecyclerAdapter? = null
-    private val data = arrayListOf(
-        Expense("testA", "100", "memoA1"),
-        Expense("testA", "200", "memoA2"),
-        Expense("testB", "300", "memoB1"),
-        Expense("testB", "400", "memoB2"),
-        Expense("testC", "500", "memoC1")
-    )
+    private var data: ArrayList<Expense>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,13 +41,18 @@ class MainFragment : Fragment(), OnRecyclerListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recyclerView = fragment_main_recycler_view
-        recyclerView?.layoutManager = LinearLayoutManager(activity)
-        recyclerAdapter = RecyclerAdapter(context, data, this).apply {
-            setHeader()
-            setFooter()
+
+        Database.readExpenses {
+            data = ArrayList(it)
+            recyclerView = fragment_main_recycler_view
+            recyclerView?.layoutManager = LinearLayoutManager(activity)
+            recyclerAdapter = RecyclerAdapter(context, data!!, this@MainFragment).apply {
+                setHeader()
+                setFooter()
+            }
+            recyclerView?.adapter = recyclerAdapter
         }
-        recyclerView?.adapter = recyclerAdapter
+
         fragment_main_floating_action_button.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.dialog_view_fragment_main_add, null, false)
             val builder = context?.let {
@@ -60,13 +60,18 @@ class MainFragment : Fragment(), OnRecyclerListener {
                     .setTitle(R.string.fragment_main_add_title)
                     .setView(dialogView)
                     .setPositiveButton(R.string.fragment_main_add_positive) { _, _ ->
-                        data.add(Expense(
+                        val item = Expense(
+                            null,
                             RecyclerType.BODY,
                             dialogView.dialog_view_fragment_main_add_tag.text.toString(),
-                            dialogView.dialog_view_fragment_main_add_value.text.toString(),
-                            dialogView.dialog_view_fragment_main_add_note.text.toString()))
-                        Toast.makeText(context, "add", Toast.LENGTH_SHORT).show()
-                        recyclerAdapter?.notifyDataSetChanged()
+                            dialogView.dialog_view_fragment_main_add_value.text.toString().toInt(10),
+                            dialogView.dialog_view_fragment_main_add_note.text.toString())
+                        Database.addExpense(item) { id ->
+                            item.id = id
+                            data?.add(item)
+                            Toast.makeText(context, "add", Toast.LENGTH_SHORT).show()
+                            recyclerAdapter?.notifyDataSetChanged()
+                        }
                     }
                     .setNegativeButton(R.string.cancel, null)
             } ?: return@setOnClickListener
@@ -95,8 +100,10 @@ class MainFragment : Fragment(), OnRecyclerListener {
                 .setTitle(R.string.fragment_main_remove_title)
                 .setMessage(getString(R.string.fragment_main_remove_message, item.tag, item.value))
                 .setPositiveButton(R.string.ok) { _, _ ->
-                    data.remove(item)
-                    recyclerAdapter?.notifyDataSetChanged()
+                    Database.deleteExpenses(item) {
+                        data?.remove(item)
+                        recyclerAdapter?.notifyDataSetChanged()
+                    }
                 }
                 .setNegativeButton(R.string.cancel, null)
         } ?: return
