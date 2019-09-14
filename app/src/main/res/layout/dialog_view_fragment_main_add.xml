@@ -7,18 +7,10 @@
         android:layout_height="match_parent"
         android:padding="@dimen/margin_mid">
 
-    <com.google.android.material.textfield.TextInputLayout
+    <Spinner
+            android:id="@+id/dialog_view_fragment_main_add_tag"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        <EditText
-                android:id="@+id/dialog_view_fragment_main_add_tag"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/fragment_main_add_tag"/>
-
-    </com.google.android.material.textfield.TextInputLayout>
-
+            android:layout_height="wrap_content"/>
 
     <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

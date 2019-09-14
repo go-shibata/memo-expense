@@ -6,11 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.go.memoexpensesapplication.Prefs
 
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.constant.RecyclerType
@@ -55,6 +57,9 @@ class MainFragment : Fragment(), OnRecyclerListener {
 
         fragment_main_floating_action_button.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.dialog_view_fragment_main_add, null, false)
+            val tags = Prefs.getTags().toList()
+            dialogView.dialog_view_fragment_main_add_tag.adapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, tags)
+
             val builder = context?.let {
                 AlertDialog.Builder(it)
                     .setTitle(R.string.fragment_main_add_title)
@@ -63,7 +68,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
                         val item = Expense(
                             null,
                             RecyclerType.BODY,
-                            dialogView.dialog_view_fragment_main_add_tag.text.toString(),
+                            dialogView.dialog_view_fragment_main_add_tag.selectedItem as String,
                             dialogView.dialog_view_fragment_main_add_value.text.toString().toInt(10),
                             dialogView.dialog_view_fragment_main_add_note.text.toString())
                         Database.addExpense(item) { id ->
