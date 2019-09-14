@@ -26,6 +26,8 @@ import kotlinx.android.synthetic.main.dialog_view_fragment_main_add.view.*
 
 class MainFragment : Fragment(), OnRecyclerListener {
     private var listener: OnFragmentInteractionListener? = null
+    private lateinit var recyclerAdapter: RecyclerAdapter
+
     private lateinit var viewModel: MainFragmentViewModel
     private lateinit var binding: FragmentMainBinding
 
@@ -49,11 +51,11 @@ class MainFragment : Fragment(), OnRecyclerListener {
         Database.readExpenses {
             viewModel.data = ArrayList(it)
             binding.fragmentMainRecyclerView.layoutManager = LinearLayoutManager(activity)
-            viewModel.recyclerAdapter = RecyclerAdapter(viewModel.data, this@MainFragment).apply {
+            recyclerAdapter = RecyclerAdapter(viewModel.data, this@MainFragment).apply {
                 setHeader()
                 setFooter()
             }
-            binding.fragmentMainRecyclerView.adapter = viewModel.recyclerAdapter
+            binding.fragmentMainRecyclerView.adapter = recyclerAdapter
         }
 
         binding.fragmentMainFloatingActionButton.setOnClickListener {
@@ -76,7 +78,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
                             item.id = id
                             viewModel.data.add(item)
                             Toast.makeText(context, "add", Toast.LENGTH_SHORT).show()
-                            viewModel.recyclerAdapter?.notifyDataSetChanged()
+                            recyclerAdapter.notifyDataSetChanged()
                         }
                     }
                     .setNegativeButton(R.string.cancel, null)
@@ -108,7 +110,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
                 .setPositiveButton(R.string.ok) { _, _ ->
                     Database.deleteExpenses(item) {
                         viewModel.data.remove(item)
-                        viewModel.recyclerAdapter?.notifyDataSetChanged()
+                        recyclerAdapter.notifyDataSetChanged()
                     }
                 }
                 .setNegativeButton(R.string.cancel, null)
