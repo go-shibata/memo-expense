@@ -4,16 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.go.memoexpensesapplication.R
-import com.example.go.memoexpensesapplication.constant.RecyclerType
+import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainBodyBinding
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainSectionBinding
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
-import kotlinx.android.synthetic.main.list_item_fragment_main_body.view.*
-import kotlinx.android.synthetic.main.list_item_fragment_main_section.view.*
 
 class RecyclerAdapter(
     private val context: Context?,
@@ -27,18 +24,18 @@ class RecyclerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // 表示するレイアウトを設定
-        return when (RecyclerType.fromInt(viewType)) {
-            RecyclerType.HEADER -> {
+        return when (ExpenseViewType.fromInt(viewType)) {
+            ExpenseViewType.HEADER -> {
                 HeaderViewHolder(layoutInflater.inflate(R.layout.list_item_fragment_main_header, parent, false))
             }
-            RecyclerType.FOOTER -> {
+            ExpenseViewType.FOOTER -> {
                 FooterViewHolder(layoutInflater.inflate(R.layout.list_item_fragment_main_footer, parent, false))
             }
-            RecyclerType.SECTION -> {
+            ExpenseViewType.SECTION -> {
                 val binding = ListItemFragmentMainSectionBinding.inflate(layoutInflater, parent, false)
                 SectionViewHolder(binding)
             }
-            RecyclerType.BODY -> {
+            ExpenseViewType.BODY -> {
                 val binding = ListItemFragmentMainBodyBinding.inflate(layoutInflater, parent, false)
                 BodyViewHolder(binding)
             }
@@ -79,10 +76,10 @@ class RecyclerAdapter(
         return if (hasHeader) {
             when {
                 position == 0 -> {
-                    RecyclerType.HEADER.type
+                    ExpenseViewType.HEADER.type
                 }
                 hasFooter && position == itemCount - 1 -> {
-                    RecyclerType.FOOTER.type
+                    ExpenseViewType.FOOTER.type
                 }
                 else -> {
                     data[position - 1].type.type
@@ -91,7 +88,7 @@ class RecyclerAdapter(
         } else {
             when {
                 hasFooter && position == itemCount - 1 -> {
-                    RecyclerType.FOOTER.type
+                    ExpenseViewType.FOOTER.type
                 }
                 else -> {
                     data[position].type.type
@@ -112,7 +109,7 @@ class RecyclerAdapter(
         val sortedData = ArrayList(data.sortedBy { it.tag })
         val tagList = data.map { it.tag }.distinct()
         for (tag in tagList) {
-            sortedData.add(sortedData.indexOfFirst { it.tag == tag }, Expense(null, RecyclerType.SECTION, tag, null, null))
+            sortedData.add(sortedData.indexOfFirst { it.tag == tag }, Expense(null, ExpenseViewType.SECTION, tag, null, null))
         }
         return sortedData
     }

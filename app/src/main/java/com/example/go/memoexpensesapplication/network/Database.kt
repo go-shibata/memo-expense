@@ -1,7 +1,7 @@
 package com.example.go.memoexpensesapplication.network
 
 import android.util.Log
-import com.example.go.memoexpensesapplication.constant.RecyclerType
+import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.model.Expense
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -36,7 +36,7 @@ object Database {
                 val data = it.documents.map { item ->
                     Expense(
                         item.id,
-                        RecyclerType.BODY,
+                        ExpenseViewType.BODY,
                         item.get("tag") as String?,
                         (item.get("value") as Long?)?.toInt(),
                         item.get("note") as String?)

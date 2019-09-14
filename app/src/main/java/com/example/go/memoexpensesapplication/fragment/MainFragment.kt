@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.go.memoexpensesapplication.Prefs
 
 import com.example.go.memoexpensesapplication.R
-import com.example.go.memoexpensesapplication.constant.RecyclerType
+import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.network.Database
 import com.example.go.memoexpensesapplication.view.adapter.RecyclerAdapter
@@ -67,7 +67,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
                     .setPositiveButton(R.string.fragment_main_add_positive) { _, _ ->
                         val item = Expense(
                             null,
-                            RecyclerType.BODY,
+                            ExpenseViewType.BODY,
                             dialogView.dialog_view_fragment_main_add_tag.selectedItem as String,
                             dialogView.dialog_view_fragment_main_add_value.text.toString().toInt(10),
                             dialogView.dialog_view_fragment_main_add_note.text.toString())

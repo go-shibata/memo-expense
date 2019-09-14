@@ -1,10 +1,10 @@
 package com.example.go.memoexpensesapplication.model
 
-import com.example.go.memoexpensesapplication.constant.RecyclerType
+import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 
 data class Expense(
     var id: String?,
-    val type: RecyclerType,
+    val type: ExpenseViewType,
     val tag: String?,
     val value: Int?,
     val note: String?
@@ -13,5 +13,5 @@ data class Expense(
         tag: String?,
         value: Int?,
         note: String?
-    ): this(null, RecyclerType.BODY, tag, value, note)
+    ): this(null, ExpenseViewType.BODY, tag, value, note)
 }
