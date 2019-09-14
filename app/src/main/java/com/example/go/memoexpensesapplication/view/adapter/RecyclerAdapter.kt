@@ -1,6 +1,5 @@
 package com.example.go.memoexpensesapplication.view.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,16 +12,15 @@ import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 
 class RecyclerAdapter(
-    private val context: Context?,
     private val data: ArrayList<Expense>,
     private val onRecyclerListener: OnRecyclerListener
 ) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
-    private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     private var hasHeader = false
     private var hasFooter = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
         // 表示するレイアウトを設定
         return when (ExpenseViewType.fromInt(viewType)) {
             ExpenseViewType.HEADER -> {
@@ -105,7 +103,7 @@ class RecyclerAdapter(
         hasFooter = true
     }
 
-    fun getDataWithSection(): ArrayList<Expense> {
+    private fun getDataWithSection(): ArrayList<Expense> {
         val sortedData = ArrayList(data.sortedBy { it.tag })
         val tagList = data.map { it.tag }.distinct()
         for (tag in tagList) {
