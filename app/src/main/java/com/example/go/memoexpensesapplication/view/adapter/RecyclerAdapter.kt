@@ -8,6 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.constant.RecyclerType
+import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainBodyBinding
+import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainSectionBinding
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 import kotlinx.android.synthetic.main.list_item_fragment_main_body.view.*
@@ -33,10 +35,12 @@ class RecyclerAdapter(
                 FooterViewHolder(layoutInflater.inflate(R.layout.list_item_fragment_main_footer, parent, false))
             }
             RecyclerType.SECTION -> {
-                SectionViewHolder(layoutInflater.inflate(R.layout.list_item_fragment_main_section, parent, false))
+                val binding = ListItemFragmentMainSectionBinding.inflate(layoutInflater, parent, false)
+                SectionViewHolder(binding)
             }
             RecyclerType.BODY -> {
-                BodyViewHolder(layoutInflater.inflate(R.layout.list_item_fragment_main_body, parent, false))
+                val binding = ListItemFragmentMainBodyBinding.inflate(layoutInflater, parent, false)
+                BodyViewHolder(binding)
             }
         }
     }
@@ -48,16 +52,14 @@ class RecyclerAdapter(
             is BodyViewHolder -> {
                 val dataPos = if (hasHeader) position - 1 else position
                 holder.apply {
-                    tagView.text = data[dataPos].tag
-                    valueView.text = data[dataPos].value.toString()
-                    noteView.text = data[dataPos].note
+                    binding.expense = data[dataPos]
                     itemView.setOnClickListener {
                         onRecyclerListener.onRecyclerClicked(it, dataPos, data[dataPos])
                     }
                 }
             }
             is SectionViewHolder -> {
-                holder.tagView.text = data[position].tag
+                holder.binding.expense = data[position]
             }
             is HeaderViewHolder -> {}
             is FooterViewHolder -> {}
@@ -121,13 +123,7 @@ class RecyclerAdapter(
 
     class FooterViewHolder(itemView: View) : ViewHolder(itemView)
 
-    class BodyViewHolder(itemView: View) : ViewHolder(itemView) {
-        val tagView: TextView = itemView.list_item_fragment_main_body_tag
-        val valueView: TextView = itemView.list_item_fragment_main_body_value
-        val noteView: TextView = itemView.list_item_fragment_main_body_note
-    }
+    class BodyViewHolder(val binding: ListItemFragmentMainBodyBinding) : ViewHolder(binding.root)
 
-    class SectionViewHolder(itemView: View) : ViewHolder(itemView) {
-        val tagView: TextView = itemView.list_item_fragment_main_section_tag
-    }
+    class SectionViewHolder(val binding: ListItemFragmentMainSectionBinding) : ViewHolder(binding.root)
 }

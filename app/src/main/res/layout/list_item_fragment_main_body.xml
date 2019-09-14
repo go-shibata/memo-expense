@@ -1,31 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/list_item_fragment_main_body"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/margin_mid">
+<layout
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
 
-    <TextView
-            android:id="@+id/list_item_fragment_main_body_tag"
-            android:layout_width="0dp"
+        <variable
+                name="expense"
+                type="com.example.go.memoexpensesapplication.model.Expense" />
+    </data>
+
+    <LinearLayout
+            android:id="@+id/list_item_fragment_main_body"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:layout_gravity="center_vertical"/>
+            android:padding="@dimen/margin_mid">
 
-    <TextView
-            android:id="@+id/list_item_fragment_main_body_value"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:layout_gravity="center_vertical"/>
+        <TextView
+                android:id="@+id/list_item_fragment_main_body_tag"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center_vertical"
+                android:text="@{expense.tag}"/>
 
-    <TextView
-            android:id="@+id/list_item_fragment_main_body_note"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:layout_gravity="center_vertical"/>
+        <TextView
+                android:id="@+id/list_item_fragment_main_body_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:layout_gravity="center_vertical"
+                android:text="@{expense.value.toString()}"/>
 
-</LinearLayout>
+        <TextView
+                android:id="@+id/list_item_fragment_main_body_note"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:layout_gravity="center_vertical"
+                android:text="@{expense.note}"/>
+
+    </LinearLayout>
+</layout>

@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/list_item_fragment_main_section"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/margin_mid"
-        android:background="@color/colorGray">
+<layout
+        xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-            android:id="@+id/list_item_fragment_main_section_tag"
-            android:layout_width="wrap_content"
+    <data>
+
+        <variable
+                name="expense"
+                type="com.example.go.memoexpensesapplication.model.Expense" />
+    </data>
+
+    <LinearLayout
+            android:id="@+id/list_item_fragment_main_section"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:textColor="@color/colorWhite"/>
+            android:padding="@dimen/margin_mid"
+            android:background="@color/colorGray">
 
-</LinearLayout>
+        <TextView
+                android:id="@+id/list_item_fragment_main_section_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@{expense.tag}"
+                android:textColor="@color/colorWhite"/>
+
+    </LinearLayout>
+</layout>
