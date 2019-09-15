@@ -7,9 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.Prefs
@@ -41,22 +41,26 @@ class MainFragment : Fragment(), OnRecyclerListener {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentMainBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[MainFragmentViewModel::class.java]
-
-        Database.readExpenses {
-            viewModel.data = ArrayList(it)
-            binding.fragmentMainRecyclerView.layoutManager = LinearLayoutManager(activity)
-            recyclerAdapter = RecyclerAdapter(viewModel.data, this@MainFragment).apply {
-                setHeader()
-                setFooter()
-            }
-            binding.fragmentMainRecyclerView.adapter = recyclerAdapter
+        recyclerAdapter = RecyclerAdapter(viewModel.data.value!!, this@MainFragment).apply {
+            setHeader()
+            setFooter()
         }
+
+        binding.fragmentMainRecyclerView.apply {
+            adapter = recyclerAdapter
+            layoutManager = LinearLayoutManager(activity)
+        }
+
+        viewModel.data.observe(this, Observer {
+            recyclerAdapter.notifyDataSetChanged()
+        })
 
         binding.fragmentMainFloatingActionButton.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.dialog_view_fragment_main_add, null, false)
@@ -76,15 +80,23 @@ class MainFragment : Fragment(), OnRecyclerListener {
                             dialogView.dialog_view_fragment_main_add_note.text.toString())
                         Database.addExpense(item) { id ->
                             item.id = id
-                            viewModel.data.add(item)
-                            Toast.makeText(context, "add", Toast.LENGTH_SHORT).show()
-                            recyclerAdapter.notifyDataSetChanged()
+                            viewModel.data.apply {
+                                value?.add(item)
+                                postValue(value)
+                            }
                         }
                     }
                     .setNegativeButton(R.string.cancel, null)
             } ?: return@setOnClickListener
             MyDialogFragment().setBuilder(builder)
                 .show((activity as AppCompatActivity).supportFragmentManager, null)
+        }
+
+        Database.readExpenses {
+            viewModel.data.apply {
+                value?.addAll(it)
+                postValue(value)
+            }
         }
     }
 
@@ -109,8 +121,10 @@ class MainFragment : Fragment(), OnRecyclerListener {
                 .setMessage(getString(R.string.fragment_main_remove_message, item.tag, item.value))
                 .setPositiveButton(R.string.ok) { _, _ ->
                     Database.deleteExpenses(item) {
-                        viewModel.data.remove(item)
-                        recyclerAdapter.notifyDataSetChanged()
+                        viewModel.data.apply {
+                            value?.remove(item)
+                            postValue(value)
+                        }
                     }
                 }
                 .setNegativeButton(R.string.cancel, null)

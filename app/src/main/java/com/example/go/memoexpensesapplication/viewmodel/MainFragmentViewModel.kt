@@ -1,8 +1,13 @@
 package com.example.go.memoexpensesapplication.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.go.memoexpensesapplication.model.Expense
 
 class MainFragmentViewModel : ViewModel() {
-    var data: ArrayList<Expense> = ArrayList(emptyList())
+    val data: MutableLiveData<ArrayList<Expense>> = MutableLiveData()
+
+    init {
+        data.value = ArrayList(emptyList())
+    }
 }
