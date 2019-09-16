@@ -17,7 +17,7 @@ class MainFragmentViewModel : ViewModel() {
             LiveDataReactiveStreams.fromPublisher(it)
         }
 
-    fun send(action: MainAction<Any?>) {
+    fun send(action: MainAction<*>) {
         dispatcher.dispatch(action)
     }
 }

@@ -8,11 +8,11 @@ import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 
-class MainDispatcher(private val viewModel: MainFragmentViewModel): Dispatcher<MainAction<Any?>> {
+class MainDispatcher(private val viewModel: MainFragmentViewModel): Dispatcher<MainAction<*>> {
     private val _onChangeExpense: FlowableProcessor<ArrayList<Expense>> = PublishProcessor.create()
     val onChangeExpense: Flowable<ArrayList<Expense>> = _onChangeExpense
 
-    override fun dispatch(action: MainAction<Any?>) {
+    override fun dispatch(action: MainAction<*>) {
         when (action) {
             is MainAction.GetExpense -> {
                 Database.readExpenses {
