@@ -17,12 +17,12 @@ import com.example.go.memoexpensesapplication.Prefs
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.action.MainAction
 import com.example.go.memoexpensesapplication.constant.ExpenseViewType
+import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMainAddBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.adapter.RecyclerAdapter
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 import com.example.go.memoexpensesapplication.viewmodel.MainFragmentViewModel
-import kotlinx.android.synthetic.main.dialog_view_fragment_main_add.view.*
 
 class MainFragment : Fragment(), OnRecyclerListener {
     private var listener: OnFragmentInteractionListener? = null
@@ -63,21 +63,21 @@ class MainFragment : Fragment(), OnRecyclerListener {
         })
 
         binding.fragmentMainFloatingActionButton.setOnClickListener {
-            val dialogView = layoutInflater.inflate(R.layout.dialog_view_fragment_main_add, view as ViewGroup, false)
+            val binding = DialogViewFragmentMainAddBinding.inflate(layoutInflater, view as ViewGroup, false)
             val tags = Prefs.getTags().toList()
-            dialogView.dialog_view_fragment_main_add_tag.adapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, tags)
+            binding.dialogViewFragmentMainAddTag.adapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, tags)
 
             val builder = context?.let {
                 AlertDialog.Builder(it)
                     .setTitle(R.string.fragment_main_add_title)
-                    .setView(dialogView)
+                    .setView(binding.root)
                     .setPositiveButton(R.string.fragment_main_add_positive) { _, _ ->
                         val item = Expense(
                             null,
                             ExpenseViewType.BODY,
-                            dialogView.dialog_view_fragment_main_add_tag.selectedItem as String,
-                            dialogView.dialog_view_fragment_main_add_value.text.toString().toInt(10),
-                            dialogView.dialog_view_fragment_main_add_note.text.toString())
+                            binding.dialogViewFragmentMainAddTag.selectedItem as String,
+                            binding.dialogViewFragmentMainAddValue.text.toString().toInt(10),
+                            binding.dialogViewFragmentMainAddNote.text.toString())
                         viewModel.send(MainAction.AddExpense(item))
                     }
                     .setNegativeButton(R.string.cancel, null)
