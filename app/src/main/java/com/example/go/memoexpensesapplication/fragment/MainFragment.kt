@@ -63,7 +63,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
         })
 
         binding.fragmentMainFloatingActionButton.setOnClickListener {
-            val dialogView = layoutInflater.inflate(R.layout.dialog_view_fragment_main_add, null, false)
+            val dialogView = layoutInflater.inflate(R.layout.dialog_view_fragment_main_add, view as ViewGroup, false)
             val tags = Prefs.getTags().toList()
             dialogView.dialog_view_fragment_main_add_tag.adapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, tags)
 
