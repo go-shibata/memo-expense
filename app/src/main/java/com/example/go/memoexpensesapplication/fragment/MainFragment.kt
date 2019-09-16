@@ -2,10 +2,8 @@ package com.example.go.memoexpensesapplication.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +31,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -101,6 +100,20 @@ class MainFragment : Fragment(), OnRecyclerListener {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_fragment_main, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_fragment_main_edit_tag -> {
+                TODO("not implemented")
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onRecyclerClicked(v: View, position: Int, item: Expense) {
