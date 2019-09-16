@@ -1,13 +1,23 @@
 package com.example.go.memoexpensesapplication.viewmodel
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
+import com.example.go.memoexpensesapplication.action.MainAction
+import com.example.go.memoexpensesapplication.dispatcher.MainDispatcher
 import com.example.go.memoexpensesapplication.model.Expense
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class MainFragmentViewModel : ViewModel() {
-    val data: MutableLiveData<ArrayList<Expense>> = MutableLiveData()
+    private val dispatcher = MainDispatcher(this)
 
-    init {
-        data.value = ArrayList(emptyList())
+    val data: LiveData<ArrayList<Expense>> = dispatcher.onChangeExpense
+        .observeOn(AndroidSchedulers.mainThread())
+        .to {
+            LiveDataReactiveStreams.fromPublisher(it)
+        }
+
+    fun send(action: MainAction<Any?>) {
+        dispatcher.dispatch(action)
     }
 }

@@ -12,7 +12,7 @@ import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 
 class RecyclerAdapter(
-    private val data: ArrayList<Expense>,
+    private var data: ArrayList<Expense>,
     private val onRecyclerListener: OnRecyclerListener
 ) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
@@ -101,6 +101,11 @@ class RecyclerAdapter(
 
     fun setFooter() {
         hasFooter = true
+    }
+
+    fun update(data: ArrayList<Expense>) {
+        this.data = data
+        notifyDataSetChanged()
     }
 
     private fun getDataWithSection(): ArrayList<Expense> {

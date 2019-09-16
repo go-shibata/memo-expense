@@ -15,10 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.Prefs
 
 import com.example.go.memoexpensesapplication.R
+import com.example.go.memoexpensesapplication.action.MainAction
 import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.model.Expense
-import com.example.go.memoexpensesapplication.network.Database
 import com.example.go.memoexpensesapplication.view.adapter.RecyclerAdapter
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 import com.example.go.memoexpensesapplication.viewmodel.MainFragmentViewModel
@@ -48,7 +48,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[MainFragmentViewModel::class.java]
-        recyclerAdapter = RecyclerAdapter(viewModel.data.value!!, this@MainFragment).apply {
+        recyclerAdapter = RecyclerAdapter(viewModel.data.value ?: ArrayList(emptyList()), this@MainFragment).apply {
             setHeader()
             setFooter()
         }
@@ -59,7 +59,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
         }
 
         viewModel.data.observe(this, Observer {
-            recyclerAdapter.notifyDataSetChanged()
+            recyclerAdapter.update(it)
         })
 
         binding.fragmentMainFloatingActionButton.setOnClickListener {
@@ -78,13 +78,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
                             dialogView.dialog_view_fragment_main_add_tag.selectedItem as String,
                             dialogView.dialog_view_fragment_main_add_value.text.toString().toInt(10),
                             dialogView.dialog_view_fragment_main_add_note.text.toString())
-                        Database.addExpense(item) { id ->
-                            item.id = id
-                            viewModel.data.apply {
-                                value?.add(item)
-                                postValue(value)
-                            }
-                        }
+                        viewModel.send(MainAction.AddExpense(item))
                     }
                     .setNegativeButton(R.string.cancel, null)
             } ?: return@setOnClickListener
@@ -92,12 +86,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
                 .show((activity as AppCompatActivity).supportFragmentManager, null)
         }
 
-        Database.readExpenses {
-            viewModel.data.apply {
-                value?.addAll(it)
-                postValue(value)
-            }
-        }
+        viewModel.send(MainAction.GetExpense())
     }
 
     override fun onAttach(context: Context) {
@@ -120,12 +109,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
                 .setTitle(R.string.fragment_main_remove_title)
                 .setMessage(getString(R.string.fragment_main_remove_message, item.tag, item.value))
                 .setPositiveButton(R.string.ok) { _, _ ->
-                    Database.deleteExpenses(item) {
-                        viewModel.data.apply {
-                            value?.remove(item)
-                            postValue(value)
-                        }
-                    }
+                    viewModel.send(MainAction.DeleteExpense(item))
                 }
                 .setNegativeButton(R.string.cancel, null)
         } ?: return
