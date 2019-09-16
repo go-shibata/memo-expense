@@ -16,7 +16,7 @@ class MainDispatcher(private val viewModel: MainFragmentViewModel): Dispatcher<M
         when (action) {
             is MainAction.GetExpense -> {
                 Database.readExpenses {
-                    val expenses = viewModel.data.value ?: ArrayList(emptyList())
+                    val expenses = viewModel.data.value ?: arrayListOf()
                     expenses.apply {
                         if (isNotEmpty()) clear()
                         addAll(it)
@@ -28,7 +28,7 @@ class MainDispatcher(private val viewModel: MainFragmentViewModel): Dispatcher<M
                 val expense = action.data
                 Database.addExpense(expense) { id ->
                     expense.id = id
-                    val expenses = viewModel.data.value ?: ArrayList(emptyList())
+                    val expenses = viewModel.data.value ?: arrayListOf()
                     expenses.add(expense)
                     _onChangeExpense.onNext(expenses)
                 }
@@ -36,7 +36,7 @@ class MainDispatcher(private val viewModel: MainFragmentViewModel): Dispatcher<M
             is MainAction.DeleteExpense -> {
                 val expense = action.data
                 Database.deleteExpenses(expense) {
-                    val expenses = viewModel.data.value ?: ArrayList(emptyList())
+                    val expenses = viewModel.data.value ?: arrayListOf()
                     expenses.remove(expense)
                     _onChangeExpense.onNext(expenses)
                 }
