@@ -47,7 +47,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[MainFragmentViewModel::class.java]
-        recyclerAdapter = RecyclerAdapter(viewModel.data.value ?: arrayListOf(), this@MainFragment).apply {
+        recyclerAdapter = RecyclerAdapter(viewModel.data.value.orEmpty(), this@MainFragment).apply {
             setHeader()
             setFooter()
         }

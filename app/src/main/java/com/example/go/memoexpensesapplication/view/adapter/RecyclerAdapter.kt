@@ -12,7 +12,7 @@ import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 
 class RecyclerAdapter(
-    private var data: ArrayList<Expense>,
+    private var data: List<Expense>,
     private val onRecyclerListener: OnRecyclerListener
 ) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
@@ -103,7 +103,7 @@ class RecyclerAdapter(
         hasFooter = true
     }
 
-    fun update(data: ArrayList<Expense>) {
+    fun update(data: List<Expense>) {
         this.data = data
         notifyDataSetChanged()
     }
