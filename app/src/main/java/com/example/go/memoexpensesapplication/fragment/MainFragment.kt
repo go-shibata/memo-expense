@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -19,6 +18,7 @@ import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMain
 import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.adapter.RecyclerAdapter
+import com.example.go.memoexpensesapplication.view.adapter.SpinnerAdapter
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 import com.example.go.memoexpensesapplication.viewmodel.MainFragmentViewModel
 
@@ -64,7 +64,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
         binding.fragmentMainFloatingActionButton.setOnClickListener {
             val binding = DialogViewFragmentMainAddBinding.inflate(layoutInflater, view as ViewGroup, false)
             val tags = Prefs.getTags().toList()
-            binding.dialogViewFragmentMainAddTag.adapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, tags)
+            binding.dialogViewFragmentMainAddTag.adapter = SpinnerAdapter(context!!, tags)
 
             val builder = context?.let {
                 AlertDialog.Builder(it)
