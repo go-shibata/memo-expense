@@ -22,10 +22,12 @@ class TagListFragmentViewModel : ViewModel() {
                 _data.value = tags
             }
             is TagListAction.AddTag -> {
-                TODO("Not Implemented")
+                Prefs.addTags(action.data)
+                _data.value = _data.value?.plus(action.data)
             }
             is TagListAction.DeleteTag -> {
-                TODO("Not Implemented")
+                Prefs.removeTags(action.data)
+                _data.value = _data.value?.minus(action.data)
             }
         }
     }
