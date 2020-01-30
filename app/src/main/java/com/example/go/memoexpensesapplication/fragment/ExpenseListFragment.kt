@@ -14,18 +14,18 @@ import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.action.MainAction
 import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMainAddBinding
-import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
+import com.example.go.memoexpensesapplication.databinding.FragmentExpenseListBinding
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter
 import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
 import com.example.go.memoexpensesapplication.viewmodel.MainFragmentViewModel
 
-class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
+class ExpenseListFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var expenseListAdapter: ExpenseListAdapter
 
     private lateinit var viewModel: MainFragmentViewModel
-    private lateinit var binding: FragmentMainBinding
+    private lateinit var binding: FragmentExpenseListBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentMainBinding.inflate(inflater, container, false)
+        binding = FragmentExpenseListBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -54,7 +54,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
             ViewModelProvider.NewInstanceFactory()
         )[MainFragmentViewModel::class.java]
         expenseListAdapter =
-            ExpenseListAdapter(viewModel.data.value.orEmpty(), this@MainFragment).apply {
+            ExpenseListAdapter(viewModel.data.value.orEmpty(), this@ExpenseListFragment).apply {
                 setHeader()
                 setFooter()
             }
@@ -145,6 +145,6 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
     companion object {
         @JvmStatic
-        fun newInstance() = MainFragment()
+        fun newInstance() = ExpenseListFragment()
     }
 }
