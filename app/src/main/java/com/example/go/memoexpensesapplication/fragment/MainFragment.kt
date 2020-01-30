@@ -17,7 +17,7 @@ import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMain
 import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.adapter.RecyclerAdapter
-import com.example.go.memoexpensesapplication.view.adapter.SpinnerAdapter
+import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 import com.example.go.memoexpensesapplication.viewmodel.MainFragmentViewModel
 
@@ -72,7 +72,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
             val binding =
                 DialogViewFragmentMainAddBinding.inflate(layoutInflater, view as ViewGroup, false)
             val tags = Prefs.getTags().toList()
-            binding.tag.adapter = SpinnerAdapter(context!!, tags)
+            binding.tag.adapter = TagListSpinnerAdapter(context!!, tags)
 
             val builder = context?.let {
                 AlertDialog.Builder(it)

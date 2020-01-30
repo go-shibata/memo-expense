@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import com.example.go.memoexpensesapplication.databinding.SpinnerItemBinding
+import com.example.go.memoexpensesapplication.databinding.ListItemTagListSpinnerBinding
 
-class SpinnerAdapter(
+class TagListSpinnerAdapter(
     context: Context,
     private val items: List<String>
 ) : BaseAdapter() {
@@ -15,10 +15,10 @@ class SpinnerAdapter(
     private val inflater = LayoutInflater.from(context)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val binding: SpinnerItemBinding
+        val binding: ListItemTagListSpinnerBinding
 
         if (convertView == null) {
-            binding = SpinnerItemBinding.inflate(inflater, parent, false)
+            binding = ListItemTagListSpinnerBinding.inflate(inflater, parent, false)
             val viewHolder = ViewHolder(binding)
             binding.root.tag = viewHolder
         } else {
@@ -36,5 +36,5 @@ class SpinnerAdapter(
     override fun getCount(): Int = items.size
 
 
-    class ViewHolder(val binding: SpinnerItemBinding)
+    class ViewHolder(val binding: ListItemTagListSpinnerBinding)
 }
