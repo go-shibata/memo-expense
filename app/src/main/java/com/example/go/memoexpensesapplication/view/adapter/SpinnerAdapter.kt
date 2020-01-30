@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.TextView
-import com.example.go.memoexpensesapplication.R
-import kotlinx.android.synthetic.main.spinner_item.view.*
+import com.example.go.memoexpensesapplication.databinding.SpinnerItemBinding
 
 class SpinnerAdapter(
     context: Context,
@@ -17,22 +15,18 @@ class SpinnerAdapter(
     private val inflater = LayoutInflater.from(context)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view: View
-        val viewHolder: ViewHolder
+        val binding: SpinnerItemBinding
 
         if (convertView == null) {
-            view = inflater.inflate(R.layout.spinner_item, parent, false)
-            viewHolder = ViewHolder(
-                view.tag_name
-            )
-            view.tag = viewHolder
+            binding = SpinnerItemBinding.inflate(inflater, parent, false)
+            val viewHolder = ViewHolder(binding)
+            binding.root.tag = viewHolder
         } else {
-            view = convertView
-            viewHolder = convertView.tag as ViewHolder
+            binding = (convertView.tag as ViewHolder).binding
         }
+        binding.tag = getItem(position)
 
-        viewHolder.bindView(getItem(position))
-        return view
+        return binding.root
     }
 
     override fun getItem(position: Int): String = items[position]
@@ -42,9 +36,5 @@ class SpinnerAdapter(
     override fun getCount(): Int = items.size
 
 
-    class ViewHolder(private val textView: TextView) {
-        fun bindView(tag: String?) {
-            textView.text = tag
-        }
-    }
+    class ViewHolder(val binding: SpinnerItemBinding)
 }

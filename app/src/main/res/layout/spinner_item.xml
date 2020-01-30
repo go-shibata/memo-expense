@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tag_name"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical|start"
-        android:padding="@dimen/margin_mid"
-        android:textSize="@dimen/text_size_mid" />
+<layout
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+                name="tag"
+                type="String" />
+    </data>
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:padding="@dimen/margin_mid"
+            android:text="@{tag}"
+            android:textSize="@dimen/text_size_mid" />
+</layout>
