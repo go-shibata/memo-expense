@@ -4,7 +4,7 @@
     <string name="cancel">キャンセル</string>
     <string name="add">追加</string>
 
-    <string name="fragment_main_add_title">要素の追加</string>
+    <string name="fragment_main_add_title">出費メモの追加</string>
     <string name="fragment_main_add_tag">タグ</string>
     <string name="fragment_main_add_value">金額</string>
     <string name="fragment_main_add_note">メモ</string>
