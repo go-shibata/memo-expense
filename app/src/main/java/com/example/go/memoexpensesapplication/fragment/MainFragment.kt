@@ -59,7 +59,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
             setFooter()
         }
 
-        binding.fragmentMainRecyclerView.apply {
+        binding.expenseList.apply {
             adapter = recyclerAdapter
             layoutManager = LinearLayoutManager(activity)
         }
@@ -68,11 +68,11 @@ class MainFragment : Fragment(), OnRecyclerListener {
             recyclerAdapter.update(it)
         })
 
-        binding.fragmentMainFloatingActionButton.setOnClickListener {
+        binding.buttonAddExpense.setOnClickListener {
             val binding =
                 DialogViewFragmentMainAddBinding.inflate(layoutInflater, view as ViewGroup, false)
             val tags = Prefs.getTags().toList()
-            binding.dialogViewFragmentMainAddTag.adapter = SpinnerAdapter(context!!, tags)
+            binding.tag.adapter = SpinnerAdapter(context!!, tags)
 
             val builder = context?.let {
                 AlertDialog.Builder(it)
@@ -82,9 +82,9 @@ class MainFragment : Fragment(), OnRecyclerListener {
                         val item = Expense(
                             null,
                             ExpenseViewType.BODY,
-                            binding.dialogViewFragmentMainAddTag.selectedItem as String,
-                            binding.dialogViewFragmentMainAddValue.text.toString().toInt(10),
-                            binding.dialogViewFragmentMainAddNote.text.toString()
+                            binding.tag.selectedItem as String,
+                            binding.value.text.toString().toInt(10),
+                            binding.memo.text.toString()
                         )
                         viewModel.send(MainAction.AddExpense(item))
                     }

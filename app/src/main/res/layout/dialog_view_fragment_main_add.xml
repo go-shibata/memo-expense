@@ -3,14 +3,13 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
-            android:id="@+id/dialog_view_fragment_main_add"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="@dimen/margin_mid">
 
         <Spinner
-                android:id="@+id/dialog_view_fragment_main_add_tag"
+                android:id="@+id/tag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -19,7 +18,7 @@
                 android:layout_height="wrap_content">
 
             <EditText
-                    android:id="@+id/dialog_view_fragment_main_add_value"
+                    android:id="@+id/value"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/fragment_main_add_value"
@@ -33,7 +32,7 @@
                 android:layout_height="wrap_content">
 
             <EditText
-                    android:id="@+id/dialog_view_fragment_main_add_note"
+                    android:id="@+id/memo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/fragment_main_add_note" />
