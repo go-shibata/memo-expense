@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.action.TagListAction
 import com.example.go.memoexpensesapplication.databinding.FragmentTagListBinding
 import com.example.go.memoexpensesapplication.view.adapter.TagListAdapter
@@ -71,7 +73,17 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
     }
 
     override fun onRecyclerClicked(v: View, position: Int, item: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val builder = context?.let {
+            AlertDialog.Builder(it)
+                .setTitle(R.string.fragment_tag_list_remove_tag_title)
+                .setMessage(resources.getString(R.string.fragment_tag_list_remove_tag, item))
+                .setPositiveButton(R.string.ok) { _, _ ->
+                    viewModel.send(TagListAction.DeleteTag(item))
+                }
+                .setNegativeButton(R.string.cancel, null)
+        } ?: return
+        MyDialogFragment().setBuilder(builder)
+            .show((activity as AppCompatActivity).supportFragmentManager, null)
     }
 
     companion object {
