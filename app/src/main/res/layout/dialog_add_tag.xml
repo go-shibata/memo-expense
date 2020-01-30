@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_mid">
+
+        <EditText
+                android:id="@+id/input_tag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/fragment_tag_list_add_tag_hint" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+</layout>

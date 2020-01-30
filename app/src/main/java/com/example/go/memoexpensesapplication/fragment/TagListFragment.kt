@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.action.TagListAction
+import com.example.go.memoexpensesapplication.databinding.DialogAddTagBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentTagListBinding
 import com.example.go.memoexpensesapplication.view.adapter.TagListAdapter
 import com.example.go.memoexpensesapplication.viewmodel.TagListFragmentViewModel
@@ -54,6 +55,22 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
 
             val itemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
             addItemDecoration(itemDecoration)
+        }
+
+        binding.buttonAddTag.setOnClickListener {
+            val binding = DialogAddTagBinding.inflate(layoutInflater, view as ViewGroup, false)
+
+            val builder = context?.let {
+                AlertDialog.Builder(it)
+                    .setTitle(R.string.fragment_tag_list_add_tag_title)
+                    .setView(binding.root)
+                    .setPositiveButton(R.string.add) { _, _ ->
+                        viewModel.send(TagListAction.AddTag(binding.inputTag.text.toString()))
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+            } ?: return@setOnClickListener
+            MyDialogFragment().setBuilder(builder)
+                .show((activity as AppCompatActivity).supportFragmentManager, null)
         }
 
         viewModel.data.observe(this, Observer {
