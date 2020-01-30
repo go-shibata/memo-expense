@@ -3,14 +3,13 @@ package com.example.go.memoexpensesapplication.fragment
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.Prefs
-
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.action.MainAction
 import com.example.go.memoexpensesapplication.constant.ExpenseViewType
@@ -46,7 +45,10 @@ class MainFragment : Fragment(), OnRecyclerListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[MainFragmentViewModel::class.java]
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.NewInstanceFactory()
+        )[MainFragmentViewModel::class.java]
         recyclerAdapter = RecyclerAdapter(viewModel.data.value.orEmpty(), this@MainFragment).apply {
             setHeader()
             setFooter()
@@ -62,7 +64,8 @@ class MainFragment : Fragment(), OnRecyclerListener {
         })
 
         binding.fragmentMainFloatingActionButton.setOnClickListener {
-            val binding = DialogViewFragmentMainAddBinding.inflate(layoutInflater, view as ViewGroup, false)
+            val binding =
+                DialogViewFragmentMainAddBinding.inflate(layoutInflater, view as ViewGroup, false)
             val tags = Prefs.getTags().toList()
             binding.dialogViewFragmentMainAddTag.adapter = SpinnerAdapter(context!!, tags)
 
@@ -76,7 +79,8 @@ class MainFragment : Fragment(), OnRecyclerListener {
                             ExpenseViewType.BODY,
                             binding.dialogViewFragmentMainAddTag.selectedItem as String,
                             binding.dialogViewFragmentMainAddValue.text.toString().toInt(10),
-                            binding.dialogViewFragmentMainAddNote.text.toString())
+                            binding.dialogViewFragmentMainAddNote.text.toString()
+                        )
                         viewModel.send(MainAction.AddExpense(item))
                     }
                     .setNegativeButton(R.string.cancel, null)
@@ -110,7 +114,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_fragment_main_edit_tag -> {
-                TODO("not implemented")
+                listener?.onTransitionTagList()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -131,7 +135,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
     }
 
     interface OnFragmentInteractionListener {
-        fun onFragmentInteraction()
+        fun onTransitionTagList()
     }
 
     companion object {

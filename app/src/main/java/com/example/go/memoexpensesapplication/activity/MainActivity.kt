@@ -1,9 +1,10 @@
 package com.example.go.memoexpensesapplication.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.fragment.MainFragment
+import com.example.go.memoexpensesapplication.fragment.TagListFragment
 
 class MainActivity :
     AppCompatActivity(),
@@ -18,7 +19,10 @@ class MainActivity :
             .commit()
     }
 
-    override fun onFragmentInteraction() {
-        println("NOT IMPLEMENT")
+    override fun onTransitionTagList() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.activity_main_container, TagListFragment.newInstance())
+            .addToBackStack(null)
+            .commit()
     }
 }
