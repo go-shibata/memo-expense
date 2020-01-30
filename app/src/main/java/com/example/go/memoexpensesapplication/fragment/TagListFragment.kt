@@ -41,7 +41,10 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as? AppCompatActivity)?.supportActionBar?.apply {
+            setTitle(R.string.fragment_tag_list_title)
+            setDisplayHomeAsUpEnabled(true)
+        }
 
         viewModel = ViewModelProvider(
             this,

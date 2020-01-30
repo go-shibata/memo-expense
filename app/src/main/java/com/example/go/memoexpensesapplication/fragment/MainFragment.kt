@@ -45,7 +45,10 @@ class MainFragment : Fragment(), OnRecyclerListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as? AppCompatActivity)?.supportActionBar?.apply {
+            setTitle(R.string.app_name)
+            setDisplayHomeAsUpEnabled(false)
+        }
 
         viewModel = ViewModelProvider(
             this,

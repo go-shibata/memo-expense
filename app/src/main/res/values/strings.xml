@@ -16,6 +16,7 @@
     <string name="fragment_main_footer">以上</string>
     <string name="fragment_main_menu_tag_edit">タグの編集</string>
 
+    <string name="fragment_tag_list_title">タグ一覧</string>
     <string name="fragment_tag_list_add_tag_title">タグの追加</string>
     <string name="fragment_tag_list_add_tag_hint">タグ名</string>
     <string name="fragment_tag_list_remove_tag_title">タグの削除</string>
