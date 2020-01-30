@@ -75,7 +75,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
                 AlertDialog.Builder(it)
                     .setTitle(R.string.fragment_main_add_title)
                     .setView(binding.root)
-                    .setPositiveButton(R.string.fragment_main_add_positive) { _, _ ->
+                    .setPositiveButton(R.string.add) { _, _ ->
                         val item = Expense(
                             null,
                             ExpenseViewType.BODY,
