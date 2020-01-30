@@ -16,14 +16,14 @@ import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMainAddBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.model.Expense
-import com.example.go.memoexpensesapplication.view.adapter.RecyclerAdapter
+import com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter
 import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 import com.example.go.memoexpensesapplication.viewmodel.MainFragmentViewModel
 
 class MainFragment : Fragment(), OnRecyclerListener {
     private var listener: OnFragmentInteractionListener? = null
-    private lateinit var recyclerAdapter: RecyclerAdapter
+    private lateinit var expenseListAdapter: ExpenseListAdapter
 
     private lateinit var viewModel: MainFragmentViewModel
     private lateinit var binding: FragmentMainBinding
@@ -54,18 +54,19 @@ class MainFragment : Fragment(), OnRecyclerListener {
             this,
             ViewModelProvider.NewInstanceFactory()
         )[MainFragmentViewModel::class.java]
-        recyclerAdapter = RecyclerAdapter(viewModel.data.value.orEmpty(), this@MainFragment).apply {
-            setHeader()
-            setFooter()
-        }
+        expenseListAdapter =
+            ExpenseListAdapter(viewModel.data.value.orEmpty(), this@MainFragment).apply {
+                setHeader()
+                setFooter()
+            }
 
         binding.expenseList.apply {
-            adapter = recyclerAdapter
+            adapter = expenseListAdapter
             layoutManager = LinearLayoutManager(activity)
         }
 
         viewModel.data.observe(this, Observer {
-            recyclerAdapter.update(it)
+            expenseListAdapter.update(it)
         })
 
         binding.buttonAddExpense.setOnClickListener {

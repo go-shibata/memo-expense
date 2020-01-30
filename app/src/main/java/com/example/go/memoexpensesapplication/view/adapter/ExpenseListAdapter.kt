@@ -11,10 +11,10 @@ import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainSe
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 
-class RecyclerAdapter(
+class ExpenseListAdapter(
     private var data: List<Expense>,
     private val onRecyclerListener: OnRecyclerListener
-) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<ExpenseListAdapter.ViewHolder>() {
 
     private var hasHeader = false
     private var hasFooter = false
