@@ -2,8 +2,10 @@ package com.example.go.memoexpensesapplication.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +24,7 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -35,6 +38,8 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         viewModel = ViewModelProvider(
             this,
             ViewModelProvider.NewInstanceFactory()
@@ -54,6 +59,15 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
         })
 
         viewModel.send(TagListAction.GetTag())
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                fragmentManager?.popBackStack()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onRecyclerClicked(v: View, position: Int, item: String) {

@@ -45,6 +45,8 @@ class MainFragment : Fragment(), OnRecyclerListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
         viewModel = ViewModelProvider(
             this,
             ViewModelProvider.NewInstanceFactory()
