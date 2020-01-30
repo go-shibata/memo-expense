@@ -10,20 +10,32 @@
     </data>
 
     <LinearLayout
-            android:id="@+id/list_item_fragment_main_section"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/margin_mid"
-            android:background="@color/colorGray">
+            android:background="@color/colorGray"
+            android:orientation="horizontal"
+            android:padding="@dimen/margin_mid">
 
         <TextView
-                android:id="@+id/list_item_fragment_main_section_tag"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="2"
                 android:text="@{expense.tag}"
-                android:textColor="@color/colorWhite"/>
+                android:textColor="@color/colorWhite" />
+
+        <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3"
+                android:text="@{expense.value.toString()}"
+                android:textColor="@color/colorWhite" />
+
+        <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3" />
 
     </LinearLayout>
 </layout>

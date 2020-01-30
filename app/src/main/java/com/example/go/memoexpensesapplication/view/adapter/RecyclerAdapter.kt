@@ -24,13 +24,26 @@ class RecyclerAdapter(
         // 表示するレイアウトを設定
         return when (ExpenseViewType.fromInt(viewType)) {
             ExpenseViewType.HEADER -> {
-                HeaderViewHolder(layoutInflater.inflate(R.layout.list_item_fragment_main_header, parent, false))
+                HeaderViewHolder(
+                    layoutInflater.inflate(
+                        R.layout.list_item_fragment_main_header,
+                        parent,
+                        false
+                    )
+                )
             }
             ExpenseViewType.FOOTER -> {
-                FooterViewHolder(layoutInflater.inflate(R.layout.list_item_fragment_main_footer, parent, false))
+                FooterViewHolder(
+                    layoutInflater.inflate(
+                        R.layout.list_item_fragment_main_footer,
+                        parent,
+                        false
+                    )
+                )
             }
             ExpenseViewType.SECTION -> {
-                val binding = ListItemFragmentMainSectionBinding.inflate(layoutInflater, parent, false)
+                val binding =
+                    ListItemFragmentMainSectionBinding.inflate(layoutInflater, parent, false)
                 SectionViewHolder(binding)
             }
             ExpenseViewType.BODY -> {
@@ -54,10 +67,13 @@ class RecyclerAdapter(
                 }
             }
             is SectionViewHolder -> {
-                holder.binding.expense = data[position]
+                val dataPos = if (hasHeader) position - 1 else position
+                holder.binding.expense = data[dataPos]
             }
-            is HeaderViewHolder -> {}
-            is FooterViewHolder -> {}
+            is HeaderViewHolder -> {
+            }
+            is FooterViewHolder -> {
+            }
         }
     }
 
@@ -112,7 +128,11 @@ class RecyclerAdapter(
         val sortedData = ArrayList(data.sortedBy { it.tag })
         val tagList = data.map { it.tag }.distinct()
         for (tag in tagList) {
-            sortedData.add(sortedData.indexOfFirst { it.tag == tag }, Expense(null, ExpenseViewType.SECTION, tag, null, null))
+            val sum = data.filter { it.tag == tag }.sumBy { it.value ?: 0 }
+            sortedData.add(
+                sortedData.indexOfFirst { it.tag == tag },
+                Expense(null, ExpenseViewType.SECTION, tag, sum, null)
+            )
         }
         return sortedData
     }
@@ -125,5 +145,6 @@ class RecyclerAdapter(
 
     class BodyViewHolder(val binding: ListItemFragmentMainBodyBinding) : ViewHolder(binding.root)
 
-    class SectionViewHolder(val binding: ListItemFragmentMainSectionBinding) : ViewHolder(binding.root)
+    class SectionViewHolder(val binding: ListItemFragmentMainSectionBinding) :
+        ViewHolder(binding.root)
 }
