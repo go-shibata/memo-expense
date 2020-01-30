@@ -18,10 +18,9 @@ import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter
 import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
-import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 import com.example.go.memoexpensesapplication.viewmodel.MainFragmentViewModel
 
-class MainFragment : Fragment(), OnRecyclerListener {
+class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var expenseListAdapter: ExpenseListAdapter
 
@@ -126,7 +125,7 @@ class MainFragment : Fragment(), OnRecyclerListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onRecyclerClicked(v: View, position: Int, item: Expense) {
+    override fun onClickExpense(v: View, position: Int, item: Expense) {
         val builder = context?.let {
             AlertDialog.Builder(it)
                 .setTitle(R.string.fragment_main_remove_title)

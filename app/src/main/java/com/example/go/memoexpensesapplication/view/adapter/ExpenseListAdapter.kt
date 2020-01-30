@@ -9,11 +9,10 @@ import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainBodyBinding
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainSectionBinding
 import com.example.go.memoexpensesapplication.model.Expense
-import com.example.go.memoexpensesapplication.view.listener.OnRecyclerListener
 
 class ExpenseListAdapter(
     private var data: List<Expense>,
-    private val onRecyclerListener: OnRecyclerListener
+    private val onClickExpenseListener: OnClickExpenseListener
 ) : RecyclerView.Adapter<ExpenseListAdapter.ViewHolder>() {
 
     private var hasHeader = false
@@ -62,7 +61,7 @@ class ExpenseListAdapter(
                 holder.apply {
                     binding.expense = data[dataPos]
                     itemView.setOnClickListener {
-                        onRecyclerListener.onRecyclerClicked(it, dataPos, data[dataPos])
+                        onClickExpenseListener.onClickExpense(it, dataPos, data[dataPos])
                     }
                 }
             }
@@ -147,4 +146,8 @@ class ExpenseListAdapter(
 
     class SectionViewHolder(val binding: ListItemFragmentMainSectionBinding) :
         ViewHolder(binding.root)
+
+    interface OnClickExpenseListener {
+        fun onClickExpense(v: View, position: Int, item: Expense)
+    }
 }
