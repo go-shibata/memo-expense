@@ -3,6 +3,7 @@ package com.example.go.memoexpensesapplication.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.go.memoexpensesapplication.action.Action
 import com.example.go.memoexpensesapplication.action.MainAction
 import com.example.go.memoexpensesapplication.dispatcher.MainDispatcher
 import com.example.go.memoexpensesapplication.model.Expense
@@ -15,7 +16,7 @@ class MainFragmentViewModel : ViewModel() {
 
     private val disposable: Disposable = MainDispatcher.subscribe(::reduce)
 
-    private fun reduce(action: MainAction<*>) {
+    private fun reduce(action: Action) {
         when (action) {
             is MainAction.GetExpense -> {
                 Database.readExpenses {
