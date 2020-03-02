@@ -130,7 +130,7 @@ class ExpenseListAdapter(
             val sum = data.filter { it.tag == tag }.sumBy { it.value ?: 0 }
             sortedData.add(
                 sortedData.indexOfFirst { it.tag == tag },
-                Expense(null, ExpenseViewType.SECTION, tag, sum, null)
+                Expense(null, ExpenseViewType.SECTION, null, tag, sum, null)
             )
         }
         return sortedData
