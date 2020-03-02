@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.Prefs
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.action.MainAction
-import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMainAddBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentExpenseListBinding
 import com.example.go.memoexpensesapplication.model.Expense
+import com.example.go.memoexpensesapplication.model.User
 import com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter
 import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
 import com.example.go.memoexpensesapplication.viewmodel.MainFragmentViewModel
@@ -26,6 +26,8 @@ class ExpenseListFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListene
 
     private lateinit var viewModel: MainFragmentViewModel
     private lateinit var binding: FragmentExpenseListBinding
+
+    private lateinit var user: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,8 +82,7 @@ class ExpenseListFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListene
                     .setView(binding.root)
                     .setPositiveButton(R.string.add) { _, _ ->
                         val item = Expense(
-                            null,
-                            ExpenseViewType.BODY,
+                            user.uid,
                             binding.tag.selectedItem as String,
                             binding.value.text.toString().toInt(10),
                             binding.memo.text.toString()
@@ -94,7 +95,7 @@ class ExpenseListFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListene
                 .show((activity as AppCompatActivity).supportFragmentManager, null)
         }
 
-        viewModel.send(MainAction.GetExpense())
+        viewModel.send(MainAction.GetExpense(user.uid))
     }
 
     override fun onAttach(context: Context) {
@@ -139,12 +140,18 @@ class ExpenseListFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListene
             .show((activity as AppCompatActivity).supportFragmentManager, null)
     }
 
+    fun setUser(user: User) {
+        this.user = user
+    }
+
     interface OnFragmentInteractionListener {
         fun onTransitionTagList()
     }
 
     companion object {
         @JvmStatic
-        fun newInstance() = ExpenseListFragment()
+        fun newInstance(user: User) = ExpenseListFragment().apply {
+            setUser(user)
+        }
     }
 }

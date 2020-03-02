@@ -19,7 +19,7 @@ class MainFragmentViewModel : ViewModel() {
     private fun reduce(action: Action) {
         when (action) {
             is MainAction.GetExpense -> {
-                Database.readExpenses {
+                Database.readExpenses(action.data) {
                     _data.value = it
                 }
             }

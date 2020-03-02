@@ -44,9 +44,8 @@ class MainActivity :
     }
 
     override fun onLoggedIn(user: User) {
-        // TODO: ExpenseListFragment に　User を渡す
         supportFragmentManager.beginTransaction()
-            .replace(binding.container.id, ExpenseListFragment.newInstance())
+            .replace(binding.container.id, ExpenseListFragment.newInstance(user))
             .commit()
     }
 }
