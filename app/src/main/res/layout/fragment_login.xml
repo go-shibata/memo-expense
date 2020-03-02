@@ -9,6 +9,10 @@
         <variable
                 name="viewModel"
                 type="com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel" />
+
+        <variable
+                name="loginFragment"
+                type="com.example.go.memoexpensesapplication.fragment.LoginFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -80,7 +84,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_mid"
-                android:onClick="@{() -> viewModel.onCreateUser()}"
+                android:onClick="@{() -> loginFragment.onClickCreateUser()}"
                 android:text="@string/fragment_login_create_user"
                 app:layout_constraintEnd_toStartOf="@+id/btn_login"
                 app:layout_constraintHorizontal_chainStyle="spread"
@@ -93,7 +97,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_mid"
-                android:onClick="@{() -> viewModel.onLogin()}"
+                android:onClick="@{() -> loginFragment.onClickLogin()}"
                 android:text="@string/fragment_login_login"
                 app:layout_constraintEnd_toStartOf="@id/guide_end"
                 app:layout_constraintHorizontal_weight="1"
