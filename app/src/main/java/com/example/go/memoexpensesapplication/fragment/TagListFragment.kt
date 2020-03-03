@@ -8,25 +8,41 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.R
-import com.example.go.memoexpensesapplication.action.TagListAction
+import com.example.go.memoexpensesapplication.actioncreator.TagListActionCreator
+import com.example.go.memoexpensesapplication.component.DaggerTagListComponent
 import com.example.go.memoexpensesapplication.databinding.DialogAddTagBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentTagListBinding
 import com.example.go.memoexpensesapplication.view.adapter.TagListAdapter
-import com.example.go.memoexpensesapplication.viewmodel.TagListFragmentViewModel
+import com.example.go.memoexpensesapplication.viewmodel.FragmentTagListViewModel
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import javax.inject.Inject
 
 class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
     private lateinit var tagListAdapter: TagListAdapter
 
-    private lateinit var viewModel: TagListFragmentViewModel
+    private lateinit var viewModel: FragmentTagListViewModel
     private lateinit var binding: FragmentTagListBinding
+    private val compositeDisposable = CompositeDisposable()
+    @Inject
+    lateinit var actionCreator: TagListActionCreator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val tagListComponent = DaggerTagListComponent.create()
+        tagListComponent.inject(this)
+
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.NewInstanceFactory()
+        )[FragmentTagListViewModel::class.java]
+        viewModel.inject(tagListComponent)
+
         setHasOptionsMenu(true)
     }
 
@@ -36,6 +52,18 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
     ): View? {
         binding = FragmentTagListBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        binding.fragment = this
+
+        viewModel.tags
+            .subscribe { tags -> tagListAdapter.update(tags) }
+            .addTo(compositeDisposable)
+        viewModel.addTag
+            .subscribe { tag -> tagListAdapter.add(tag) }
+            .addTo(compositeDisposable)
+        viewModel.deleteTag
+            .subscribe { tag -> tagListAdapter.delete(tag) }
+            .addTo(compositeDisposable)
+
         return binding.root
     }
 
@@ -46,11 +74,7 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
             setDisplayHomeAsUpEnabled(true)
         }
 
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.NewInstanceFactory()
-        )[TagListFragmentViewModel::class.java]
-        tagListAdapter = TagListAdapter(viewModel.data.value.orEmpty(), this)
+        tagListAdapter = TagListAdapter(emptyList(), this)
 
         binding.layoutTagList.apply {
             adapter = tagListAdapter
@@ -60,27 +84,7 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
             addItemDecoration(itemDecoration)
         }
 
-        binding.buttonAddTag.setOnClickListener {
-            val binding = DialogAddTagBinding.inflate(layoutInflater, view as ViewGroup, false)
-
-            val builder = context?.let {
-                AlertDialog.Builder(it)
-                    .setTitle(R.string.fragment_tag_list_add_tag_title)
-                    .setView(binding.root)
-                    .setPositiveButton(R.string.add) { _, _ ->
-                        viewModel.send(TagListAction.AddTag(binding.inputTag.text.toString()))
-                    }
-                    .setNegativeButton(R.string.cancel, null)
-            } ?: return@setOnClickListener
-            MyDialogFragment().setBuilder(builder)
-                .show((activity as AppCompatActivity).supportFragmentManager, null)
-        }
-
-        viewModel.data.observe(this, Observer {
-            tagListAdapter.update(it)
-        })
-
-        viewModel.send(TagListAction.GetTag())
+        actionCreator.getAllTags()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -98,7 +102,24 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
                 .setTitle(R.string.fragment_tag_list_remove_tag_title)
                 .setMessage(resources.getString(R.string.fragment_tag_list_remove_tag, item))
                 .setPositiveButton(R.string.ok) { _, _ ->
-                    viewModel.send(TagListAction.DeleteTag(item))
+                    actionCreator.deleteTag(item)
+                }
+                .setNegativeButton(R.string.cancel, null)
+        } ?: return
+        MyDialogFragment().setBuilder(builder)
+            .show((activity as AppCompatActivity).supportFragmentManager, null)
+    }
+
+    fun onClickAddTag() {
+        val binding = DialogAddTagBinding.inflate(layoutInflater, view as ViewGroup, false)
+
+        val builder = context?.let {
+            AlertDialog.Builder(it)
+                .setTitle(R.string.fragment_tag_list_add_tag_title)
+                .setView(binding.root)
+                .setPositiveButton(R.string.add) { _, _ ->
+                    val tag = binding.inputTag.text.toString()
+                    actionCreator.addTag(tag)
                 }
                 .setNegativeButton(R.string.cancel, null)
         } ?: return

@@ -33,6 +33,16 @@ class TagListAdapter(
         notifyDataSetChanged()
     }
 
+    fun add(tag: String) {
+        this.data = data + tag
+        notifyDataSetChanged()
+    }
+
+    fun delete(tag: String) {
+        this.data = data - tag
+        notifyDataSetChanged()
+    }
+
     class ViewHolder(val binding: ListItemTagListBinding) : RecyclerView.ViewHolder(binding.root)
 
     interface OnClickListener {

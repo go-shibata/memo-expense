@@ -1,43 +1,44 @@
 package com.example.go.memoexpensesapplication.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.go.memoexpensesapplication.Prefs
-import com.example.go.memoexpensesapplication.action.Action
-import com.example.go.memoexpensesapplication.action.TagListAction
-import com.example.go.memoexpensesapplication.dispatcher.MainDispatcher
-import io.reactivex.disposables.Disposable
+import com.example.go.memoexpensesapplication.component.TagListComponent
+import com.example.go.memoexpensesapplication.dispatcher.TagListDispatcher
+import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.processors.BehaviorProcessor
+import javax.inject.Inject
 
-class TagListFragmentViewModel : ViewModel() {
-    private val _data: MutableLiveData<List<String>> = MutableLiveData(emptyList())
-    val data: LiveData<List<String>> = _data
+class FragmentTagListViewModel : ViewModel() {
 
-    private val disposable: Disposable = MainDispatcher.subscribe(::reduce)
+    @Inject
+    lateinit var dispatcher: TagListDispatcher
 
-    private fun reduce(action: Action) {
-        when (action) {
-            is TagListAction.GetTag -> {
-                val tags = Prefs.getTags().toList()
-                _data.value = tags
-            }
-            is TagListAction.AddTag -> {
-                Prefs.addTags(action.data)
-                _data.value = _data.value?.plus(action.data)
-            }
-            is TagListAction.DeleteTag -> {
-                Prefs.removeTags(action.data)
-                _data.value = _data.value?.minus(action.data)
-            }
-        }
+    private val _tags = BehaviorProcessor.create<List<String>>()
+    val tags: Flowable<List<String>> = _tags
+
+    private val _addTag = BehaviorProcessor.create<String>()
+    val addTag: Flowable<String> = _addTag
+
+    private val _deleteTag = BehaviorProcessor.create<String>()
+    val deleteTag: Flowable<String> = _deleteTag
+
+    fun inject(tagListComponent: TagListComponent) {
+        tagListComponent.inject(this)
+        subscribe()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        disposable.dispose()
-    }
-
-    fun send(action: TagListAction<*>) {
-        MainDispatcher.dispatch(action)
+    private fun subscribe() {
+        dispatcher.onGetAllTags
+            .map { action -> action.data }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(_tags)
+        dispatcher.onAddTag
+            .map { action -> action.data }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(_addTag)
+        dispatcher.onDeleteTag
+            .map { action -> action.data }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(_deleteTag)
     }
 }
