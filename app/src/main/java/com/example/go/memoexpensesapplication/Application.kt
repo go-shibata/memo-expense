@@ -7,7 +7,6 @@ class Application : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Prefs.initPrefs(this)
         context = this
     }
 
