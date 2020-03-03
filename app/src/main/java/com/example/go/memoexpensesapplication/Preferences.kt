@@ -5,13 +5,10 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.example.go.memoexpensesapplication.constant.PrefsKey
 
-object Prefs {
+class Preferences(context: Context) {
 
-    private lateinit var pref: SharedPreferences
-
-    fun initPrefs(context: Context) {
-        pref = PreferenceManager.getDefaultSharedPreferences(context)
-    }
+    private val pref: SharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(context)
 
     fun getTags(): Set<String> = pref.getStringSet(PrefsKey.TAG.key, null) ?: emptySet()
 
@@ -21,6 +18,7 @@ object Prefs {
             .putStringSet(PrefsKey.TAG.key, tags.plus(tag))
             .apply()
     }
+
     fun removeTags(tag: String) {
         val tags = getTags()
         pref.edit()
