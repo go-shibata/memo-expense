@@ -3,20 +3,18 @@ package com.example.go.memoexpensesapplication.activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.databinding.ActivityMainBinding
-import com.example.go.memoexpensesapplication.fragment.ExpenseListFragment
 import com.example.go.memoexpensesapplication.fragment.LoginFragment
+import com.example.go.memoexpensesapplication.fragment.MainFragment
 import com.example.go.memoexpensesapplication.fragment.TagListFragment
 import com.example.go.memoexpensesapplication.model.User
-import com.example.go.memoexpensesapplication.navigator.ListFragmentNavigator
-import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
+import com.example.go.memoexpensesapplication.navigator.FragmentLoginNavigator
 
 class MainActivity :
     AppCompatActivity(),
-    ExpenseListFragment.OnFragmentInteractionListener,
-    ListFragmentNavigator {
+    MainFragment.OnFragmentInteractionListener,
+    FragmentLoginNavigator {
 
     lateinit var binding: ActivityMainBinding
 
@@ -26,13 +24,8 @@ class MainActivity :
 
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
 
-        val fragmentLoginViewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory(application)
-        )[FragmentLoginViewModel::class.java]
-        fragmentLoginViewModel.setNavigator(this)
         supportFragmentManager.beginTransaction()
-            .replace(binding.container.id, LoginFragment.newInstance(fragmentLoginViewModel))
+            .replace(binding.container.id, LoginFragment.newInstance(this))
             .commit()
     }
 
@@ -45,7 +38,7 @@ class MainActivity :
 
     override fun onLoggedIn(user: User) {
         supportFragmentManager.beginTransaction()
-            .replace(binding.container.id, ExpenseListFragment.newInstance(user))
+            .replace(binding.container.id, MainFragment.newInstance(user))
             .commit()
     }
 }

@@ -1,77 +1,44 @@
 package com.example.go.memoexpensesapplication.viewmodel
 
-import android.app.Application
-import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.example.go.memoexpensesapplication.component.LoginComponent
+import com.example.go.memoexpensesapplication.dispatcher.LoginDispatcher
 import com.example.go.memoexpensesapplication.model.User
-import com.example.go.memoexpensesapplication.navigator.ListFragmentNavigator
-import com.google.firebase.auth.FirebaseAuth
+import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.processors.BehaviorProcessor
+import javax.inject.Inject
 
-class FragmentLoginViewModel(app: Application) : AndroidViewModel(app) {
+class FragmentLoginViewModel : ViewModel() {
 
-    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private var navigator: ListFragmentNavigator? = null
+    @Inject
+    lateinit var dispatcher: LoginDispatcher
 
     val mail: MutableLiveData<String> = MutableLiveData()
     val password: MutableLiveData<String> = MutableLiveData()
 
-    fun setNavigator(navigator: ListFragmentNavigator) {
-        this.navigator = navigator
+    private val _login = BehaviorProcessor.create<User>()
+    private val _authenticationFail = BehaviorProcessor.create<Unit>()
+    val login: Flowable<User> = _login
+    val authenticationFail: Flowable<Unit> = _authenticationFail
+
+    fun inject(loginComponent: LoginComponent) {
+        loginComponent.inject(this)
+        subscribe()
     }
 
-    fun onCheckLogin() {
-        val currentUser = mAuth.currentUser
-        currentUser?.let {
-            navigator?.onLoggedIn(User(currentUser))
-        }
-    }
-
-    fun onCreateUser() {
-        val strEmail = mail.value ?: run {
-            return
-        }
-        val strPassword = password.value ?: run {
-            return
-        }
-
-        mAuth.createUserWithEmailAndPassword(strEmail, strPassword)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) { // Sign in success, update UI with the signed-in user's information
-                    mAuth.currentUser?.let { user ->
-                        navigator?.onLoggedIn(User(user))
-                    }
-                }
-
-                Toast.makeText(
-                    getApplication(),
-                    "Authentication failed.",
-                    Toast.LENGTH_SHORT
-                ).show()
+    private fun subscribe() {
+        dispatcher.onLogin
+            .map { action -> action.data }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(_login)
+        dispatcher.onAuthenticationFail
+            .map { action ->
+                println(action)
+                action.data
             }
-    }
-
-    fun onLogin() {
-        val strEmail = mail.value ?: run {
-            return
-        }
-        val strPassword = password.value ?: run {
-            return
-        }
-
-        mAuth.signInWithEmailAndPassword(strEmail, strPassword)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    mAuth.currentUser?.let { user ->
-                        navigator?.onLoggedIn(User(user))
-                    }
-                }
-
-                Toast.makeText(
-                    getApplication(),
-                    "Authentication failed.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(_authenticationFail)
     }
 }

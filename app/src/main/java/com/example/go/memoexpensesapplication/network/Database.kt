@@ -5,10 +5,7 @@ import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.model.Expense
 import com.google.firebase.firestore.FirebaseFirestore
 
-object Database {
-
-    private const val LOG_TAG = "MyDatabase"
-    private const val COLLECTION_EXPENSE = "expenses"
+class Database {
 
     private fun getDatabase(): FirebaseFirestore = FirebaseFirestore.getInstance()
 
@@ -64,5 +61,10 @@ object Database {
             .addOnFailureListener {
                 Log.w(LOG_TAG, "Error deleting documents", it)
             }
+    }
+
+    companion object {
+        private const val LOG_TAG = "MyDatabase"
+        private const val COLLECTION_EXPENSE = "expenses"
     }
 }

@@ -4,7 +4,7 @@ import com.example.go.memoexpensesapplication.model.Expense
 
 sealed class MainAction<out T>(val data: T) : Action {
 
-    class GetExpense(data: String) : MainAction<String>(data)
-    class AddExpense(data: Expense) : MainAction<Expense>(data)
-    class DeleteExpense(data: Expense) : MainAction<Expense>(data)
+    class GetAllExpenses(expenses: List<Expense>) : MainAction<List<Expense>>(expenses)
+    class AddExpense(expense: Expense) : MainAction<Expense>(expense)
+    class DeleteExpense(expense: Expense) : MainAction<Expense>(expense)
 }

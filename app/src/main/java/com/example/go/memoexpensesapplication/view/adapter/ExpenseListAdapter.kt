@@ -123,6 +123,16 @@ class ExpenseListAdapter(
         notifyDataSetChanged()
     }
 
+    fun add(expense: Expense) {
+        this.data = data + expense
+        notifyDataSetChanged()
+    }
+
+    fun delete(expense: Expense) {
+        this.data = data - expense
+        notifyDataSetChanged()
+    }
+
     private fun getDataWithSection(): ArrayList<Expense> {
         val sortedData = ArrayList(data.sortedBy { it.tag })
         val tagList = data.map { it.tag }.distinct()
