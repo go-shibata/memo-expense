@@ -5,15 +5,15 @@ import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.databinding.ActivityMainBinding
-import com.example.go.memoexpensesapplication.fragment.ExpenseListFragment
 import com.example.go.memoexpensesapplication.fragment.LoginFragment
+import com.example.go.memoexpensesapplication.fragment.MainFragment
 import com.example.go.memoexpensesapplication.fragment.TagListFragment
 import com.example.go.memoexpensesapplication.model.User
 import com.example.go.memoexpensesapplication.navigator.FragmentLoginNavigator
 
 class MainActivity :
     AppCompatActivity(),
-    ExpenseListFragment.OnFragmentInteractionListener,
+    MainFragment.OnFragmentInteractionListener,
     FragmentLoginNavigator {
 
     lateinit var binding: ActivityMainBinding
@@ -38,7 +38,7 @@ class MainActivity :
 
     override fun onLoggedIn(user: User) {
         supportFragmentManager.beginTransaction()
-            .replace(binding.container.id, ExpenseListFragment.newInstance(user))
+            .replace(binding.container.id, MainFragment.newInstance(user))
             .commit()
     }
 }
