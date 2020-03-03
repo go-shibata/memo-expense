@@ -1,50 +1,45 @@
 package com.example.go.memoexpensesapplication.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.go.memoexpensesapplication.action.Action
-import com.example.go.memoexpensesapplication.action.MainAction
+import com.example.go.memoexpensesapplication.component.MainComponent
 import com.example.go.memoexpensesapplication.dispatcher.MainDispatcher
 import com.example.go.memoexpensesapplication.model.Expense
-import com.example.go.memoexpensesapplication.network.Database
-import io.reactivex.disposables.Disposable
+import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.processors.BehaviorProcessor
+import javax.inject.Inject
 
-class MainFragmentViewModel : ViewModel() {
-    private val _data: MutableLiveData<List<Expense>> = MutableLiveData(emptyList())
-    val data: LiveData<List<Expense>> = _data
+class FragmentMainViewModel : ViewModel() {
 
-    private val disposable: Disposable = MainDispatcher.subscribe(::reduce)
+    @Inject
+    lateinit var dispatcher: MainDispatcher
 
-    private fun reduce(action: Action) {
-        when (action) {
-            is MainAction.GetExpense -> {
-                Database.readExpenses(action.data) {
-                    _data.value = it
-                }
-            }
-            is MainAction.AddExpense -> {
-                val expense = action.data
-                Database.addExpense(expense) { id ->
-                    expense.id = id
-                    _data.value = _data.value.orEmpty() + expense
-                }
-            }
-            is MainAction.DeleteExpense -> {
-                val expense = action.data
-                Database.deleteExpenses(expense) {
-                    _data.value = _data.value.orEmpty() - expense
-                }
-            }
-        }
+    private val _expenses = BehaviorProcessor.create<List<Expense>>()
+    val expenses: Flowable<List<Expense>> = _expenses
+
+    private val _addExpense = BehaviorProcessor.create<Expense>()
+    val addExpense: Flowable<Expense> = _addExpense
+
+    private val _deleteExpense = BehaviorProcessor.create<Expense>()
+    val deleteExpense: Flowable<Expense> = _deleteExpense
+
+    fun inject(mainComponent: MainComponent) {
+        mainComponent.inject(this)
+        subscribe()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        disposable.dispose()
-    }
-
-    fun send(action: MainAction<*>) {
-        MainDispatcher.dispatch(action)
+    private fun subscribe() {
+        dispatcher.onGetAllExpenses
+            .map { action -> action.data }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(_expenses)
+        dispatcher.onAddExpense
+            .map { action -> action.data }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(_addExpense)
+        dispatcher.onDeleteExpense
+            .map { action -> action.data }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(_deleteExpense)
     }
 }
