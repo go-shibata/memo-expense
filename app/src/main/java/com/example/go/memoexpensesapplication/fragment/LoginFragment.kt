@@ -69,7 +69,7 @@ class LoginFragment : Fragment() {
             .subscribe {
                 Toast.makeText(
                     context,
-                    "Authentication failed.",
+                    getString(R.string.fragment_login_authentication_failed),
                     Toast.LENGTH_SHORT
                 ).show()
             }.addTo(compositeDisposable)
