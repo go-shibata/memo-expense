@@ -6,29 +6,50 @@ import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.go.memoexpensesapplication.Prefs
+import com.example.go.memoexpensesapplication.Preferences
 import com.example.go.memoexpensesapplication.R
-import com.example.go.memoexpensesapplication.action.MainAction
-import com.example.go.memoexpensesapplication.constant.ExpenseViewType
+import com.example.go.memoexpensesapplication.actioncreator.MainActionCreator
+import com.example.go.memoexpensesapplication.component.DaggerMainComponent
 import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMainAddBinding
-import com.example.go.memoexpensesapplication.databinding.FragmentExpenseListBinding
+import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.model.Expense
+import com.example.go.memoexpensesapplication.model.User
 import com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter
 import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
-import com.example.go.memoexpensesapplication.viewmodel.MainFragmentViewModel
+import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import javax.inject.Inject
 
-class ExpenseListFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
+class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var expenseListAdapter: ExpenseListAdapter
 
-    private lateinit var viewModel: MainFragmentViewModel
-    private lateinit var binding: FragmentExpenseListBinding
+    private lateinit var viewModel: FragmentMainViewModel
+    private lateinit var binding: FragmentMainBinding
+    private val compositeDisposable = CompositeDisposable()
+    @Inject
+    lateinit var actionCreator: MainActionCreator
+    @Inject
+    lateinit var pref: Preferences
+
+    private lateinit var user: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val mainComponent = DaggerMainComponent
+            .create()
+        mainComponent.inject(this)
+
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.NewInstanceFactory()
+        )[FragmentMainViewModel::class.java]
+        viewModel.inject(mainComponent)
+
         setHasOptionsMenu(true)
     }
 
@@ -36,9 +57,20 @@ class ExpenseListFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListene
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        binding = FragmentExpenseListBinding.inflate(inflater, container, false)
+        binding = FragmentMainBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        binding.fragment = this
+
+        viewModel.expenses
+            .subscribe { expenses -> expenseListAdapter.update(expenses) }
+            .addTo(compositeDisposable)
+        viewModel.addExpense
+            .subscribe { expense -> expenseListAdapter.add(expense) }
+            .addTo(compositeDisposable)
+        viewModel.deleteExpense
+            .subscribe { expense -> expenseListAdapter.delete(expense) }
+            .addTo(compositeDisposable)
+
         return binding.root
     }
 
@@ -49,12 +81,8 @@ class ExpenseListFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListene
             setDisplayHomeAsUpEnabled(false)
         }
 
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.NewInstanceFactory()
-        )[MainFragmentViewModel::class.java]
         expenseListAdapter =
-            ExpenseListAdapter(viewModel.data.value.orEmpty(), this@ExpenseListFragment).apply {
+            ExpenseListAdapter(emptyList(), this@MainFragment).apply {
                 setHeader()
                 setFooter()
             }
@@ -64,37 +92,7 @@ class ExpenseListFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListene
             layoutManager = LinearLayoutManager(activity)
         }
 
-        viewModel.data.observe(this, Observer {
-            expenseListAdapter.update(it)
-        })
-
-        binding.buttonAddExpense.setOnClickListener {
-            val binding =
-                DialogViewFragmentMainAddBinding.inflate(layoutInflater, view as ViewGroup, false)
-            val tags = Prefs.getTags().toList()
-            binding.tag.adapter = TagListSpinnerAdapter(context!!, tags)
-
-            val builder = context?.let {
-                AlertDialog.Builder(it)
-                    .setTitle(R.string.fragment_main_add_title)
-                    .setView(binding.root)
-                    .setPositiveButton(R.string.add) { _, _ ->
-                        val item = Expense(
-                            null,
-                            ExpenseViewType.BODY,
-                            binding.tag.selectedItem as String,
-                            binding.value.text.toString().toInt(10),
-                            binding.memo.text.toString()
-                        )
-                        viewModel.send(MainAction.AddExpense(item))
-                    }
-                    .setNegativeButton(R.string.cancel, null)
-            } ?: return@setOnClickListener
-            MyDialogFragment().setBuilder(builder)
-                .show((activity as AppCompatActivity).supportFragmentManager, null)
-        }
-
-        viewModel.send(MainAction.GetExpense())
+        actionCreator.getAllExpenses(user.uid)
     }
 
     override fun onAttach(context: Context) {
@@ -131,12 +129,41 @@ class ExpenseListFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListene
                 .setTitle(R.string.fragment_main_remove_title)
                 .setMessage(getString(R.string.fragment_main_remove_message, item.tag, item.value))
                 .setPositiveButton(R.string.ok) { _, _ ->
-                    viewModel.send(MainAction.DeleteExpense(item))
+                    actionCreator.deleteExpense(item)
                 }
                 .setNegativeButton(R.string.cancel, null)
         } ?: return
         MyDialogFragment().setBuilder(builder)
             .show((activity as AppCompatActivity).supportFragmentManager, null)
+    }
+
+    fun onClickAddExpense() {
+        val binding = DialogViewFragmentMainAddBinding
+            .inflate(layoutInflater, view as ViewGroup, false)
+        val tags = pref.getTags().toList()
+        binding.tag.adapter = TagListSpinnerAdapter(context!!, tags)
+
+        val builder = context?.let {
+            AlertDialog.Builder(it)
+                .setTitle(R.string.fragment_main_add_title)
+                .setView(binding.root)
+                .setPositiveButton(R.string.add) { _, _ ->
+                    val item = Expense(
+                        user.uid,
+                        binding.tag.selectedItem as String,
+                        binding.value.text.toString().toInt(10),
+                        binding.memo.text.toString()
+                    )
+                    actionCreator.addExpense(item)
+                }
+                .setNegativeButton(R.string.cancel, null)
+        } ?: return
+        MyDialogFragment().setBuilder(builder)
+            .show((activity as AppCompatActivity).supportFragmentManager, null)
+    }
+
+    fun setUser(user: User) {
+        this.user = user
     }
 
     interface OnFragmentInteractionListener {
@@ -145,6 +172,8 @@ class ExpenseListFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListene
 
     companion object {
         @JvmStatic
-        fun newInstance() = ExpenseListFragment()
+        fun newInstance(user: User) = MainFragment().apply {
+            setUser(user)
+        }
     }
 }

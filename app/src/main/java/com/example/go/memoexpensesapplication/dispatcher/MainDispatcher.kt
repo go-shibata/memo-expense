@@ -1,18 +1,29 @@
 package com.example.go.memoexpensesapplication.dispatcher
 
-import com.example.go.memoexpensesapplication.action.Action
+import com.example.go.memoexpensesapplication.action.MainAction
 import io.reactivex.Flowable
-import io.reactivex.disposables.Disposable
+import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
-import io.reactivex.processors.PublishProcessor
 
-object MainDispatcher : Dispatcher<Action> {
-    private val onChangeExpenseProcessor: FlowableProcessor<Action> = PublishProcessor.create()
-    private val onChangeExpense: Flowable<Action> = onChangeExpenseProcessor
+class MainDispatcher : Dispatcher<MainAction<*>> {
 
-    override fun dispatch(action: Action) {
-        onChangeExpenseProcessor.onNext(action)
+    private val dispatcherGetAllExpenses: FlowableProcessor<MainAction.GetAllExpenses> =
+        BehaviorProcessor.create<MainAction.GetAllExpenses>()
+    val onGetAllExpenses: Flowable<MainAction.GetAllExpenses> = dispatcherGetAllExpenses
+
+    private val dispatcherAddExpense: FlowableProcessor<MainAction.AddExpense> =
+        BehaviorProcessor.create<MainAction.AddExpense>()
+    val onAddExpense: Flowable<MainAction.AddExpense> = dispatcherAddExpense
+
+    private val dispatcherDeleteExpense: FlowableProcessor<MainAction.DeleteExpense> =
+        BehaviorProcessor.create<MainAction.DeleteExpense>()
+    val onDeleteExpense: Flowable<MainAction.DeleteExpense> = dispatcherDeleteExpense
+
+    override fun dispatch(action: MainAction<*>) {
+        when (action) {
+            is MainAction.GetAllExpenses -> dispatcherGetAllExpenses.onNext(action)
+            is MainAction.AddExpense -> dispatcherAddExpense.onNext(action)
+            is MainAction.DeleteExpense -> dispatcherDeleteExpense.onNext(action)
+        }
     }
-
-    fun subscribe(block: (Action) -> Unit): Disposable = onChangeExpense.subscribe(block)
 }

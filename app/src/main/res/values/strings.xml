@@ -4,6 +4,17 @@
     <string name="cancel">キャンセル</string>
     <string name="add">追加</string>
 
+    <string name="user_no_name">No name</string>
+    <string name="user_no_mail">No mailAddress</string>
+
+    <string name="fragment_login_title">ログイン</string>
+    <string name="fragment_login_create_user_or_login_message">ログインまたはユーザーの作成をしてください</string>
+    <string name="fragment_login_email">メールアドレス</string>
+    <string name="fragment_login_password">パスワード</string>
+    <string name="fragment_login_create_user">ユーザー作成</string>
+    <string name="fragment_login_login">ログイン</string>
+    <string name="fragment_login_authentication_failed">認証に失敗しました</string>
+
     <string name="fragment_main_add_title">出費メモの追加</string>
     <string name="fragment_main_add_tag">タグ</string>
     <string name="fragment_main_add_value">金額</string>

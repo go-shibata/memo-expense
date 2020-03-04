@@ -5,15 +5,13 @@ import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.model.Expense
 import com.google.firebase.firestore.FirebaseFirestore
 
-object Database {
+class Database {
 
-    private const val LOG_TAG = "MyDatabase"
-    private const val COLLECTION_EXPENSE = "expenses"
-
-    private fun getDatabase() : FirebaseFirestore = FirebaseFirestore.getInstance()
+    private fun getDatabase(): FirebaseFirestore = FirebaseFirestore.getInstance()
 
     fun addExpense(expense: Expense, exec: ((String) -> Unit)? = null) {
         val data = mapOf(
+            "uid" to expense.uid,
             "tag" to expense.tag,
             "value" to expense.value,
             "note" to expense.note
@@ -29,17 +27,20 @@ object Database {
             }
     }
 
-    fun readExpenses(exec: ((List<Expense>) -> Unit)? = null) {
+    fun readExpenses(uid: String, exec: ((List<Expense>) -> Unit)? = null) {
         getDatabase().collection(COLLECTION_EXPENSE)
+            .whereEqualTo("uid", uid)
             .get()
             .addOnSuccessListener {
                 val data = it.documents.map { item ->
                     Expense(
                         item.id,
                         ExpenseViewType.BODY,
+                        item.get("uid") as String?,
                         item.get("tag") as String?,
                         (item.get("value") as Long?)?.toInt(),
-                        item.get("note") as String?)
+                        item.get("note") as String?
+                    )
                 }
                 Log.d(LOG_TAG, "Get documents, size = ${it.size()}")
                 exec?.invoke(data)
@@ -60,5 +61,10 @@ object Database {
             .addOnFailureListener {
                 Log.w(LOG_TAG, "Error deleting documents", it)
             }
+    }
+
+    companion object {
+        private const val LOG_TAG = "MyDatabase"
+        private const val COLLECTION_EXPENSE = "expenses"
     }
 }

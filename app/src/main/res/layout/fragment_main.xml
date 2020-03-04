@@ -4,10 +4,17 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+                name="fragment"
+                type="com.example.go.memoexpensesapplication.fragment.MainFragment" />
+    </data>
+
     <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".fragment.ExpenseListFragment">
+            tools:context=".fragment.MainFragment">
 
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/expense_list"
@@ -20,6 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="@dimen/margin_mid"
+                android:onClick="@{() -> fragment.onClickAddExpense()}"
                 android:scaleType="center"
                 app:srcCompat="@drawable/ic_add" />
 
