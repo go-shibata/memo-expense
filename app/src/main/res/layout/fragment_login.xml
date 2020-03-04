@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="android.text.TextUtils" />
+
         <variable
                 name="viewModel"
                 type="com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel" />
@@ -38,7 +40,9 @@
                 android:id="@+id/create_user_or_sign_in_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_mid"
                 android:text="@string/fragment_login_create_user_or_login_message"
+                android:textSize="@dimen/text_size_mid"
                 app:layout_constraintEnd_toStartOf="@id/guide_end"
                 app:layout_constraintStart_toEndOf="@id/guide_start"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -47,6 +51,7 @@
                 android:id="@+id/container_email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_large"
                 app:layout_constraintEnd_toStartOf="@id/guide_end"
                 app:layout_constraintStart_toEndOf="@id/guide_start"
                 app:layout_constraintTop_toBottomOf="@id/create_user_or_sign_in_message">
@@ -80,28 +85,34 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-                android:id="@+id/btn_create_user"
+                android:id="@+id/btn_login"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_mid"
-                android:onClick="@{() -> loginFragment.onClickCreateUser()}"
-                android:text="@string/fragment_login_create_user"
-                app:layout_constraintEnd_toStartOf="@+id/btn_login"
+                android:layout_marginTop="@dimen/margin_large"
+                android:background="@drawable/btn_main_background"
+                android:enabled="@{!(TextUtils.isEmpty(viewModel.mail) || TextUtils.isEmpty(viewModel.password))}"
+                android:onClick="@{() -> loginFragment.onClickLogin()}"
+                android:text="@string/fragment_login_login"
+                android:textColor="@color/colorWhite"
+                app:layout_constraintEnd_toStartOf="@+id/btn_create_user"
                 app:layout_constraintHorizontal_chainStyle="spread"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@id/guide_start"
                 app:layout_constraintTop_toBottomOf="@id/container_password" />
 
         <Button
-                android:id="@+id/btn_login"
+                android:id="@+id/btn_create_user"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_mid"
-                android:onClick="@{() -> loginFragment.onClickLogin()}"
-                android:text="@string/fragment_login_login"
+                android:background="@drawable/btn_modest_background"
+                android:enabled="@{!(TextUtils.isEmpty(viewModel.mail) || TextUtils.isEmpty(viewModel.password))}"
+                android:onClick="@{() -> loginFragment.onClickCreateUser()}"
+                android:text="@string/fragment_login_create_user"
+                android:textColor="@color/colorWhite"
                 app:layout_constraintEnd_toStartOf="@id/guide_end"
                 app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toEndOf="@+id/btn_create_user"
-                app:layout_constraintTop_toTopOf="@id/btn_create_user" />
+                app:layout_constraintStart_toEndOf="@+id/btn_login"
+                app:layout_constraintTop_toTopOf="@id/btn_login" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
