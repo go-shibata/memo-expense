@@ -26,6 +26,7 @@ class LoginActionCreator @Inject constructor(
                     mAuth.currentUser?.let { user ->
                         val mUser = User(user)
                         dispatcher.dispatch(LoginAction.Login(mUser))
+                        return@addOnCompleteListener
                     }
                 }
 
@@ -40,6 +41,7 @@ class LoginActionCreator @Inject constructor(
                     mAuth.currentUser?.let { user ->
                         val mUser = User(user)
                         dispatcher.dispatch(LoginAction.Login(mUser))
+                        return@addOnCompleteListener
                     }
                 }
 
