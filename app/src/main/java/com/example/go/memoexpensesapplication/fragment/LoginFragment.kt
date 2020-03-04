@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
 import com.example.go.memoexpensesapplication.component.DaggerLoginComponent
 import com.example.go.memoexpensesapplication.databinding.FragmentLoginBinding
@@ -22,6 +24,7 @@ class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
     private lateinit var navigator: FragmentLoginNavigator
     private val compositeDisposable = CompositeDisposable()
+
     @Inject
     lateinit var actionCreator: LoginActionCreator
 
@@ -72,6 +75,14 @@ class LoginFragment : Fragment() {
             }.addTo(compositeDisposable)
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as? AppCompatActivity)?.supportActionBar?.apply {
+            setTitle(R.string.fragment_login_title)
+            setDisplayHomeAsUpEnabled(false)
+        }
     }
 
     fun setNavigator(navigator: FragmentLoginNavigator) {
