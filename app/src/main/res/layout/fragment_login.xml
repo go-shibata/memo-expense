@@ -40,6 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_mid"
                 android:text="@string/fragment_login_create_user_or_login_message"
+                android:textSize="@dimen/text_size_mid"
                 app:layout_constraintEnd_toStartOf="@id/guide_end"
                 app:layout_constraintStart_toEndOf="@id/guide_start"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -48,7 +49,7 @@
                 android:id="@+id/container_email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_mid"
+                android:layout_marginTop="@dimen/margin_large"
                 app:layout_constraintEnd_toStartOf="@id/guide_end"
                 app:layout_constraintStart_toEndOf="@id/guide_start"
                 app:layout_constraintTop_toBottomOf="@id/create_user_or_sign_in_message">

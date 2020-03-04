@@ -8,7 +8,7 @@
     <string name="user_no_mail">No mailAddress</string>
 
     <string name="fragment_login_title">ログイン</string>
-    <string name="fragment_login_create_user_or_login_message">ユーザーの作成またはログインをしてください</string>
+    <string name="fragment_login_create_user_or_login_message">ログインまたはユーザーの作成をしてください</string>
     <string name="fragment_login_email">メールアドレス</string>
     <string name="fragment_login_password">パスワード</string>
     <string name="fragment_login_create_user">ユーザー作成</string>
