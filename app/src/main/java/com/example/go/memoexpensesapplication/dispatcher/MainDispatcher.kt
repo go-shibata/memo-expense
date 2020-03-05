@@ -19,11 +19,16 @@ class MainDispatcher : Dispatcher<MainAction<*>> {
         BehaviorProcessor.create<MainAction.DeleteExpense>()
     val onDeleteExpense: Flowable<MainAction.DeleteExpense> = dispatcherDeleteExpense
 
+    private val dispatcherMoveToTagList: FlowableProcessor<MainAction.MoveToTagList> =
+        BehaviorProcessor.create<MainAction.MoveToTagList>()
+    val onMoveToTagList: Flowable<MainAction.MoveToTagList> = dispatcherMoveToTagList
+
     override fun dispatch(action: MainAction<*>) {
         when (action) {
             is MainAction.GetAllExpenses -> dispatcherGetAllExpenses.onNext(action)
             is MainAction.AddExpense -> dispatcherAddExpense.onNext(action)
             is MainAction.DeleteExpense -> dispatcherDeleteExpense.onNext(action)
+            is MainAction.MoveToTagList -> dispatcherMoveToTagList.onNext(action)
         }
     }
 }
