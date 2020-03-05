@@ -5,7 +5,7 @@ import com.example.go.memoexpensesapplication.component.TagListComponent
 import com.example.go.memoexpensesapplication.dispatcher.TagListDispatcher
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.processors.PublishProcessor
 import javax.inject.Inject
 
 class FragmentTagListViewModel : ViewModel() {
@@ -13,13 +13,13 @@ class FragmentTagListViewModel : ViewModel() {
     @Inject
     lateinit var dispatcher: TagListDispatcher
 
-    private val _tags = BehaviorProcessor.create<List<String>>()
+    private val _tags = PublishProcessor.create<List<String>>()
     val tags: Flowable<List<String>> = _tags
 
-    private val _addTag = BehaviorProcessor.create<String>()
+    private val _addTag = PublishProcessor.create<String>()
     val addTag: Flowable<String> = _addTag
 
-    private val _deleteTag = BehaviorProcessor.create<String>()
+    private val _deleteTag = PublishProcessor.create<String>()
     val deleteTag: Flowable<String> = _deleteTag
 
     fun inject(tagListComponent: TagListComponent) {

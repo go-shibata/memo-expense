@@ -4,24 +4,31 @@ import androidx.lifecycle.ViewModel
 import com.example.go.memoexpensesapplication.component.MainComponent
 import com.example.go.memoexpensesapplication.dispatcher.MainDispatcher
 import com.example.go.memoexpensesapplication.model.Expense
+import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.disposables.Disposable
+import io.reactivex.processors.PublishProcessor
 import javax.inject.Inject
 
 class FragmentMainViewModel : ViewModel() {
 
+    private lateinit var navigator: FragmentMainNavigator
+
     @Inject
     lateinit var dispatcher: MainDispatcher
 
-    private val _expenses = BehaviorProcessor.create<List<Expense>>()
+    private val _expenses = PublishProcessor.create<List<Expense>>()
     val expenses: Flowable<List<Expense>> = _expenses
-
-    private val _addExpense = BehaviorProcessor.create<Expense>()
+    private val _addExpense = PublishProcessor.create<Expense>()
     val addExpense: Flowable<Expense> = _addExpense
-
-    private val _deleteExpense = BehaviorProcessor.create<Expense>()
+    private val _deleteExpense = PublishProcessor.create<Expense>()
     val deleteExpense: Flowable<Expense> = _deleteExpense
+    private lateinit var moveToTagList: Disposable
+
+    fun setNavigator(navigator: FragmentMainNavigator) {
+        this.navigator = navigator
+    }
 
     fun inject(mainComponent: MainComponent) {
         mainComponent.inject(this)
@@ -41,5 +48,14 @@ class FragmentMainViewModel : ViewModel() {
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(_deleteExpense)
+        moveToTagList = dispatcher.onMoveToTagList
+            .map { action -> action.data }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { navigator.onTransitionTagList() }
+    }
+
+    override fun onCleared() {
+        moveToTagList.dispose()
+        super.onCleared()
     }
 }

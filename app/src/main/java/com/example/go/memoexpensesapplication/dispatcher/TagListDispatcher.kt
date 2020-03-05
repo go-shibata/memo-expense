@@ -8,15 +8,15 @@ import io.reactivex.processors.FlowableProcessor
 class TagListDispatcher : Dispatcher<TagListAction<*>> {
 
     private val dispatcherGetAllTags: FlowableProcessor<TagListAction.GetAllTags> =
-        BehaviorProcessor.create<TagListAction.GetAllTags>()
+        BehaviorProcessor.create()
     val onGetAllTags: Flowable<TagListAction.GetAllTags> = dispatcherGetAllTags
 
     private val dispatcherAddTag: FlowableProcessor<TagListAction.AddTag> =
-        BehaviorProcessor.create<TagListAction.AddTag>()
+        BehaviorProcessor.create()
     val onAddTag: Flowable<TagListAction.AddTag> = dispatcherAddTag
 
     private val dispatcherDeleteTag: FlowableProcessor<TagListAction.DeleteTag> =
-        BehaviorProcessor.create<TagListAction.DeleteTag>()
+        BehaviorProcessor.create()
     val onDeleteTag: Flowable<TagListAction.DeleteTag> = dispatcherDeleteTag
 
     override fun dispatch(action: TagListAction<*>) {

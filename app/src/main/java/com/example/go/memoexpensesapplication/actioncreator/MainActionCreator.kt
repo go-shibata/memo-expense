@@ -29,4 +29,8 @@ class MainActionCreator @Inject constructor(
             dispatcher.dispatch(MainAction.DeleteExpense(expense))
         }
     }
+
+    fun moveToTagList() {
+        dispatcher.dispatch(MainAction.MoveToTagList())
+    }
 }

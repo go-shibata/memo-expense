@@ -1,12 +1,11 @@
 package com.example.go.memoexpensesapplication.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.Preferences
 import com.example.go.memoexpensesapplication.R
@@ -16,6 +15,7 @@ import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMain
 import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.model.User
+import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator
 import com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter
 import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
@@ -24,14 +24,15 @@ import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
 class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
-    private var listener: OnFragmentInteractionListener? = null
     private lateinit var expenseListAdapter: ExpenseListAdapter
 
     private lateinit var viewModel: FragmentMainViewModel
     private lateinit var binding: FragmentMainBinding
     private val compositeDisposable = CompositeDisposable()
+
     @Inject
     lateinit var actionCreator: MainActionCreator
+
     @Inject
     lateinit var pref: Preferences
 
@@ -40,15 +41,31 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val mainComponent = DaggerMainComponent
-            .create()
+        val mainComponent = DaggerMainComponent.create()
         mainComponent.inject(this)
 
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.NewInstanceFactory()
-        )[FragmentMainViewModel::class.java]
+        arguments?.run {
+            user = getSerializable(TAG_USER) as? User ?: throw RuntimeException("Invalid arguments")
+        } ?: throw RuntimeException("Invalid arguments")
+
+        activity?.run {
+            viewModel = ViewModelProviders.of(this)[FragmentMainViewModel::class.java]
+            if (this is FragmentMainNavigator) {
+                viewModel.setNavigator(this)
+            } else {
+                throw RuntimeException("$this must implement FragmentMainNavigator")
+            }
+        } ?: throw RuntimeException("Invalid activity")
         viewModel.inject(mainComponent)
+        viewModel.expenses
+            .subscribe { expenses -> expenseListAdapter.update(expenses) }
+            .addTo(compositeDisposable)
+        viewModel.addExpense
+            .subscribe { expense -> expenseListAdapter.add(expense) }
+            .addTo(compositeDisposable)
+        viewModel.deleteExpense
+            .subscribe { expense -> expenseListAdapter.delete(expense) }
+            .addTo(compositeDisposable)
 
         setHasOptionsMenu(true)
     }
@@ -60,17 +77,6 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         binding = FragmentMainBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.fragment = this
-
-        viewModel.expenses
-            .subscribe { expenses -> expenseListAdapter.update(expenses) }
-            .addTo(compositeDisposable)
-        viewModel.addExpense
-            .subscribe { expense -> expenseListAdapter.add(expense) }
-            .addTo(compositeDisposable)
-        viewModel.deleteExpense
-            .subscribe { expense -> expenseListAdapter.delete(expense) }
-            .addTo(compositeDisposable)
-
         return binding.root
     }
 
@@ -95,20 +101,6 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         actionCreator.getAllExpenses(user.uid)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException("$context must implement OnFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_fragment_main, menu)
@@ -116,9 +108,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_fragment_main_edit_tag -> {
-                listener?.onTransitionTagList()
-            }
+            R.id.menu_fragment_main_edit_tag -> actionCreator.moveToTagList()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -162,18 +152,14 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
             .show((activity as AppCompatActivity).supportFragmentManager, null)
     }
 
-    fun setUser(user: User) {
-        this.user = user
-    }
-
-    interface OnFragmentInteractionListener {
-        fun onTransitionTagList()
-    }
-
     companion object {
+        private const val TAG_USER = "USER"
+
         @JvmStatic
         fun newInstance(user: User) = MainFragment().apply {
-            setUser(user)
+            arguments = Bundle().apply {
+                putSerializable(TAG_USER, user)
+            }
         }
     }
 }

@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
 import com.example.go.memoexpensesapplication.component.DaggerLoginComponent
 import com.example.go.memoexpensesapplication.databinding.FragmentLoginBinding
-import com.example.go.memoexpensesapplication.module.LoginModule
 import com.example.go.memoexpensesapplication.navigator.FragmentLoginNavigator
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -22,7 +21,6 @@ import javax.inject.Inject
 class LoginFragment : Fragment() {
     private lateinit var viewModel: FragmentLoginViewModel
     private lateinit var binding: FragmentLoginBinding
-    private lateinit var navigator: FragmentLoginNavigator
     private val compositeDisposable = CompositeDisposable()
 
     @Inject
@@ -31,16 +29,26 @@ class LoginFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val loginComponent = DaggerLoginComponent.builder()
-            .loginModule(LoginModule())
-            .build()
+        val loginComponent = DaggerLoginComponent.create()
         loginComponent.inject(this)
 
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.NewInstanceFactory()
-        )[FragmentLoginViewModel::class.java]
+        activity?.run {
+            viewModel = ViewModelProviders.of(this)[FragmentLoginViewModel::class.java]
+            if (this is FragmentLoginNavigator) {
+                viewModel.setNavigator(this)
+            } else {
+                throw RuntimeException("$this must implement FragmentLoginNavigator")
+            }
+        } ?: throw RuntimeException("Invalid Activity")
         viewModel.inject(loginComponent)
+        viewModel.authenticationFail
+            .subscribe {
+                Toast.makeText(
+                    context,
+                    getString(R.string.fragment_login_authentication_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }.addTo(compositeDisposable)
     }
 
     override fun onDestroy() {
@@ -61,19 +69,6 @@ class LoginFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.loginFragment = this
-
-        viewModel.login
-            .subscribe { user -> navigator.onLoggedIn(user) }
-            .addTo(compositeDisposable)
-        viewModel.authenticationFail
-            .subscribe {
-                Toast.makeText(
-                    context,
-                    getString(R.string.fragment_login_authentication_failed),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }.addTo(compositeDisposable)
-
         return binding.root
     }
 
@@ -83,10 +78,6 @@ class LoginFragment : Fragment() {
             setTitle(R.string.fragment_login_title)
             setDisplayHomeAsUpEnabled(false)
         }
-    }
-
-    fun setNavigator(navigator: FragmentLoginNavigator) {
-        this.navigator = navigator
     }
 
     fun onClickCreateUser() {
@@ -103,9 +94,6 @@ class LoginFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(navigator: FragmentLoginNavigator) =
-            LoginFragment().apply {
-                setNavigator(navigator)
-            }
+        fun newInstance() = LoginFragment()
     }
 }
