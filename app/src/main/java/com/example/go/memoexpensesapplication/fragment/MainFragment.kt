@@ -1,6 +1,5 @@
 package com.example.go.memoexpensesapplication.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AlertDialog
@@ -16,6 +15,7 @@ import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMain
 import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.model.User
+import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator
 import com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter
 import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
@@ -24,14 +24,16 @@ import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
 class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
-    private var listener: OnFragmentInteractionListener? = null
     private lateinit var expenseListAdapter: ExpenseListAdapter
 
     private lateinit var viewModel: FragmentMainViewModel
     private lateinit var binding: FragmentMainBinding
+    private lateinit var navigator: FragmentMainNavigator
     private val compositeDisposable = CompositeDisposable()
+
     @Inject
     lateinit var actionCreator: MainActionCreator
+
     @Inject
     lateinit var pref: Preferences
 
@@ -95,20 +97,6 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         actionCreator.getAllExpenses(user.uid)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException("$context must implement OnFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_fragment_main, menu)
@@ -117,7 +105,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_fragment_main_edit_tag -> {
-                listener?.onTransitionTagList()
+                navigator.onTransitionTagList()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -166,14 +154,11 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         this.user = user
     }
 
-    interface OnFragmentInteractionListener {
-        fun onTransitionTagList()
-    }
-
     companion object {
         @JvmStatic
-        fun newInstance(user: User) = MainFragment().apply {
+        fun newInstance(user: User, navigator: FragmentMainNavigator) = MainFragment().apply {
             setUser(user)
+            this.navigator = navigator
         }
     }
 }

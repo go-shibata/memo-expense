@@ -10,10 +10,11 @@ import com.example.go.memoexpensesapplication.fragment.MainFragment
 import com.example.go.memoexpensesapplication.fragment.TagListFragment
 import com.example.go.memoexpensesapplication.model.User
 import com.example.go.memoexpensesapplication.navigator.FragmentLoginNavigator
+import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator
 
 class MainActivity :
     AppCompatActivity(),
-    MainFragment.OnFragmentInteractionListener,
+    FragmentMainNavigator,
     FragmentLoginNavigator {
 
     lateinit var binding: ActivityMainBinding
@@ -38,7 +39,7 @@ class MainActivity :
 
     override fun onLoggedIn(user: User) {
         supportFragmentManager.beginTransaction()
-            .replace(binding.container.id, MainFragment.newInstance(user))
+            .replace(binding.container.id, MainFragment.newInstance(user, this))
             .commit()
     }
 }
