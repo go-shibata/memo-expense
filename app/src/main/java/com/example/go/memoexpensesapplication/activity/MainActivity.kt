@@ -26,7 +26,7 @@ class MainActivity :
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
 
         supportFragmentManager.beginTransaction()
-            .replace(binding.container.id, LoginFragment.newInstance(this))
+            .replace(binding.container.id, LoginFragment.newInstance())
             .commit()
     }
 
