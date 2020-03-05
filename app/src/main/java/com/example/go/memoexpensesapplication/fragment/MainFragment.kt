@@ -44,6 +44,10 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         val mainComponent = DaggerMainComponent.create()
         mainComponent.inject(this)
 
+        arguments?.run {
+            user = getSerializable(TAG_USER) as? User ?: throw RuntimeException("Invalid arguments")
+        } ?: throw RuntimeException("Invalid arguments")
+
         activity?.run {
             viewModel = ViewModelProviders.of(this)[FragmentMainViewModel::class.java]
             if (this is FragmentMainNavigator) {
@@ -149,9 +153,13 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     }
 
     companion object {
+        private const val TAG_USER = "USER"
+
         @JvmStatic
         fun newInstance(user: User) = MainFragment().apply {
-            this.user = user
+            arguments = Bundle().apply {
+                putSerializable(TAG_USER, user)
+            }
         }
     }
 }

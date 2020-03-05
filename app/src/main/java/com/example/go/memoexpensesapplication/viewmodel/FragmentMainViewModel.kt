@@ -8,7 +8,7 @@ import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.processors.PublishProcessor
 import javax.inject.Inject
 
 class FragmentMainViewModel : ViewModel() {
@@ -18,11 +18,11 @@ class FragmentMainViewModel : ViewModel() {
     @Inject
     lateinit var dispatcher: MainDispatcher
 
-    private val _expenses = BehaviorProcessor.create<List<Expense>>()
+    private val _expenses = PublishProcessor.create<List<Expense>>()
     val expenses: Flowable<List<Expense>> = _expenses
-    private val _addExpense = BehaviorProcessor.create<Expense>()
+    private val _addExpense = PublishProcessor.create<Expense>()
     val addExpense: Flowable<Expense> = _addExpense
-    private val _deleteExpense = BehaviorProcessor.create<Expense>()
+    private val _deleteExpense = PublishProcessor.create<Expense>()
     val deleteExpense: Flowable<Expense> = _deleteExpense
     private lateinit var moveToTagList: Disposable
 
