@@ -38,7 +38,7 @@ class LoginFragment : Fragment() {
             if (this is FragmentLoginNavigator) {
                 viewModel.setNavigator(this)
             } else {
-                throw RuntimeException("$context must implement FragmentLoginNavigator")
+                throw RuntimeException("$this must implement FragmentLoginNavigator")
             }
         } ?: throw RuntimeException("Invalid Activity")
     }
