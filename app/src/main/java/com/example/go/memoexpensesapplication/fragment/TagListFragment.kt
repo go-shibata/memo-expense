@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.R
@@ -38,10 +38,9 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
         val tagListComponent = DaggerTagListComponent.create()
         tagListComponent.inject(this)
 
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.NewInstanceFactory()
-        )[FragmentTagListViewModel::class.java]
+        activity?.run {
+            viewModel = ViewModelProviders.of(this)[FragmentTagListViewModel::class.java]
+        } ?: throw RuntimeException("Invalid activity")
         viewModel.inject(tagListComponent)
 
         setHasOptionsMenu(true)
