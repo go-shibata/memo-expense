@@ -7,12 +7,11 @@ import io.reactivex.processors.FlowableProcessor
 
 class LoginDispatcher : Dispatcher<LoginAction<*>> {
 
-    private val dispatcherLogin: FlowableProcessor<LoginAction.Login> =
-        BehaviorProcessor.create<LoginAction.Login>()
+    private val dispatcherLogin: FlowableProcessor<LoginAction.Login> = BehaviorProcessor.create()
     val onLogin: Flowable<LoginAction.Login> = dispatcherLogin
 
     private val dispatcherAuthenticationFail: FlowableProcessor<LoginAction.AuthenticationFail> =
-        BehaviorProcessor.create<LoginAction.AuthenticationFail>()
+        BehaviorProcessor.create()
     val onAuthenticationFail: Flowable<LoginAction.AuthenticationFail> =
         dispatcherAuthenticationFail
 
