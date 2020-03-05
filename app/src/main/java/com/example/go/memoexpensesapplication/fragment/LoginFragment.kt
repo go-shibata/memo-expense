@@ -34,13 +34,21 @@ class LoginFragment : Fragment() {
 
         activity?.run {
             viewModel = ViewModelProviders.of(this)[FragmentLoginViewModel::class.java]
-            viewModel.inject(loginComponent)
             if (this is FragmentLoginNavigator) {
                 viewModel.setNavigator(this)
             } else {
                 throw RuntimeException("$this must implement FragmentLoginNavigator")
             }
         } ?: throw RuntimeException("Invalid Activity")
+        viewModel.inject(loginComponent)
+        viewModel.authenticationFail
+            .subscribe {
+                Toast.makeText(
+                    context,
+                    getString(R.string.fragment_login_authentication_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }.addTo(compositeDisposable)
     }
 
     override fun onDestroy() {
@@ -61,16 +69,6 @@ class LoginFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.loginFragment = this
-
-        viewModel.authenticationFail
-            .subscribe {
-                Toast.makeText(
-                    context,
-                    getString(R.string.fragment_login_authentication_failed),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }.addTo(compositeDisposable)
-
         return binding.root
     }
 

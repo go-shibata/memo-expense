@@ -46,13 +46,22 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
         activity?.run {
             viewModel = ViewModelProviders.of(this)[FragmentMainViewModel::class.java]
-            viewModel.inject(mainComponent)
             if (this is FragmentMainNavigator) {
                 viewModel.setNavigator(this)
             } else {
                 throw RuntimeException("$this must implement FragmentMainNavigator")
             }
         } ?: throw RuntimeException("Invalid activity")
+        viewModel.inject(mainComponent)
+        viewModel.expenses
+            .subscribe { expenses -> expenseListAdapter.update(expenses) }
+            .addTo(compositeDisposable)
+        viewModel.addExpense
+            .subscribe { expense -> expenseListAdapter.add(expense) }
+            .addTo(compositeDisposable)
+        viewModel.deleteExpense
+            .subscribe { expense -> expenseListAdapter.delete(expense) }
+            .addTo(compositeDisposable)
 
         setHasOptionsMenu(true)
     }
@@ -64,17 +73,6 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         binding = FragmentMainBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.fragment = this
-
-        viewModel.expenses
-            .subscribe { expenses -> expenseListAdapter.update(expenses) }
-            .addTo(compositeDisposable)
-        viewModel.addExpense
-            .subscribe { expense -> expenseListAdapter.add(expense) }
-            .addTo(compositeDisposable)
-        viewModel.deleteExpense
-            .subscribe { expense -> expenseListAdapter.delete(expense) }
-            .addTo(compositeDisposable)
-
         return binding.root
     }
 
