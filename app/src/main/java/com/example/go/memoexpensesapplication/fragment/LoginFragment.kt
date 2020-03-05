@@ -12,7 +12,6 @@ import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
 import com.example.go.memoexpensesapplication.component.DaggerLoginComponent
 import com.example.go.memoexpensesapplication.databinding.FragmentLoginBinding
-import com.example.go.memoexpensesapplication.module.LoginModule
 import com.example.go.memoexpensesapplication.navigator.FragmentLoginNavigator
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -31,9 +30,7 @@ class LoginFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val loginComponent = DaggerLoginComponent.builder()
-            .loginModule(LoginModule())
-            .build()
+        val loginComponent = DaggerLoginComponent.create()
         loginComponent.inject(this)
 
         viewModel = ViewModelProvider(

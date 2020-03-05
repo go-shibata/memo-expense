@@ -28,6 +28,7 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
     private lateinit var viewModel: FragmentTagListViewModel
     private lateinit var binding: FragmentTagListBinding
     private val compositeDisposable = CompositeDisposable()
+
     @Inject
     lateinit var actionCreator: TagListActionCreator
 

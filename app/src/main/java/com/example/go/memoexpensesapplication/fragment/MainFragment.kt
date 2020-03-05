@@ -42,8 +42,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val mainComponent = DaggerMainComponent
-            .create()
+        val mainComponent = DaggerMainComponent.create()
         mainComponent.inject(this)
 
         viewModel = ViewModelProvider(
@@ -150,14 +149,10 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
             .show((activity as AppCompatActivity).supportFragmentManager, null)
     }
 
-    fun setUser(user: User) {
-        this.user = user
-    }
-
     companion object {
         @JvmStatic
         fun newInstance(user: User, navigator: FragmentMainNavigator) = MainFragment().apply {
-            setUser(user)
+            this.user = user
             this.navigator = navigator
         }
     }
