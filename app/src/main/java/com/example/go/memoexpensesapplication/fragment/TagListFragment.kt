@@ -42,6 +42,15 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
             viewModel = ViewModelProviders.of(this)[FragmentTagListViewModel::class.java]
         } ?: throw RuntimeException("Invalid activity")
         viewModel.inject(tagListComponent)
+        viewModel.tags
+            .subscribe { tags -> tagListAdapter.update(tags) }
+            .addTo(compositeDisposable)
+        viewModel.addTag
+            .subscribe { tag -> tagListAdapter.add(tag) }
+            .addTo(compositeDisposable)
+        viewModel.deleteTag
+            .subscribe { tag -> tagListAdapter.delete(tag) }
+            .addTo(compositeDisposable)
 
         setHasOptionsMenu(true)
     }
@@ -53,17 +62,6 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
         binding = FragmentTagListBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.fragment = this
-
-        viewModel.tags
-            .subscribe { tags -> tagListAdapter.update(tags) }
-            .addTo(compositeDisposable)
-        viewModel.addTag
-            .subscribe { tag -> tagListAdapter.add(tag) }
-            .addTo(compositeDisposable)
-        viewModel.deleteTag
-            .subscribe { tag -> tagListAdapter.delete(tag) }
-            .addTo(compositeDisposable)
-
         return binding.root
     }
 
