@@ -5,7 +5,7 @@ import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.Preferences
 import com.example.go.memoexpensesapplication.R
@@ -28,7 +28,6 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
     private lateinit var viewModel: FragmentMainViewModel
     private lateinit var binding: FragmentMainBinding
-    private lateinit var navigator: FragmentMainNavigator
     private val compositeDisposable = CompositeDisposable()
 
     @Inject
@@ -45,11 +44,15 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         val mainComponent = DaggerMainComponent.create()
         mainComponent.inject(this)
 
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.NewInstanceFactory()
-        )[FragmentMainViewModel::class.java]
-        viewModel.inject(mainComponent)
+        activity?.run {
+            viewModel = ViewModelProviders.of(this)[FragmentMainViewModel::class.java]
+            viewModel.inject(mainComponent)
+            if (this is FragmentMainNavigator) {
+                viewModel.setNavigator(this)
+            } else {
+                throw RuntimeException("$this must implement FragmentMainNavigator")
+            }
+        } ?: throw RuntimeException("Invalid activity")
 
         setHasOptionsMenu(true)
     }
@@ -103,9 +106,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_fragment_main_edit_tag -> {
-                navigator.onTransitionTagList()
-            }
+            R.id.menu_fragment_main_edit_tag -> actionCreator.moveToTagList()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -151,9 +152,8 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
     companion object {
         @JvmStatic
-        fun newInstance(user: User, navigator: FragmentMainNavigator) = MainFragment().apply {
+        fun newInstance(user: User) = MainFragment().apply {
             this.user = user
-            this.navigator = navigator
         }
     }
 }

@@ -39,7 +39,7 @@ class MainActivity :
 
     override fun onLoggedIn(user: User) {
         supportFragmentManager.beginTransaction()
-            .replace(binding.container.id, MainFragment.newInstance(user, this))
+            .replace(binding.container.id, MainFragment.newInstance(user))
             .commit()
     }
 }
