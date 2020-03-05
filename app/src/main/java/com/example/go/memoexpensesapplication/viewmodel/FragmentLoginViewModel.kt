@@ -8,7 +8,7 @@ import com.example.go.memoexpensesapplication.navigator.FragmentLoginNavigator
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.processors.PublishProcessor
 import javax.inject.Inject
 
 class FragmentLoginViewModel : ViewModel() {
@@ -22,7 +22,7 @@ class FragmentLoginViewModel : ViewModel() {
     val password: MutableLiveData<String> = MutableLiveData()
 
     private lateinit var login: Disposable
-    private val _authenticationFail = BehaviorProcessor.create<Unit>()
+    private val _authenticationFail = PublishProcessor.create<Unit>()
     val authenticationFail: Flowable<Unit> = _authenticationFail
 
     fun setNavigator(navigator: FragmentLoginNavigator) {
