@@ -18,10 +18,15 @@ class LoginDispatcher @Inject constructor() : Dispatcher<LoginAction<*>> {
     val onAuthenticationFail: Flowable<LoginAction.AuthenticationFail> =
         dispatcherAuthenticationFail
 
+    private val dispatcherAutoLoginFail: FlowableProcessor<LoginAction.AutoLoginFail> =
+        BehaviorProcessor.create()
+    val onAutoLoginFail: Flowable<LoginAction.AutoLoginFail> = dispatcherAutoLoginFail
+
     override fun dispatch(action: LoginAction<*>) {
         when (action) {
             is LoginAction.Login -> dispatcherLogin.onNext(action)
             is LoginAction.AuthenticationFail -> dispatcherAuthenticationFail.onNext(action)
+            is LoginAction.AutoLoginFail -> dispatcherAutoLoginFail.onNext(action)
         }
     }
 }

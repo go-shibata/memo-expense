@@ -42,6 +42,7 @@ class LoginActionCreatorTest {
 
         actionCreator.checkLogin()
         verify(dispatcher, times(1)).dispatch(any<LoginAction.Login>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
     }
 
     @Test
@@ -50,6 +51,7 @@ class LoginActionCreatorTest {
 
         actionCreator.checkLogin()
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
+        verify(dispatcher, times(1)).dispatch(any<LoginAction.AutoLoginFail>())
     }
 
     @Test

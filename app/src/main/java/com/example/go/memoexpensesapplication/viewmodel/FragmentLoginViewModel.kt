@@ -22,6 +22,7 @@ class FragmentLoginViewModel @Inject constructor(
     private val login: Disposable
     private val _authenticationFail = PublishProcessor.create<Unit>()
     val authenticationFail: Flowable<Unit> = _authenticationFail
+    private val autoLoginFail: Disposable
 
     init {
         login = dispatcher.onLogin
@@ -37,6 +38,16 @@ class FragmentLoginViewModel @Inject constructor(
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(_authenticationFail)
+        autoLoginFail = dispatcher.onAutoLoginFail
+            .map { action -> action.data }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    navigator?.onAutoLoginFailed()
+                        ?: throw RuntimeException("Navigator must be set")
+                },
+                { throw it }
+            )
     }
 
     fun setNavigator(navigator: FragmentLoginNavigator) {
@@ -45,6 +56,7 @@ class FragmentLoginViewModel @Inject constructor(
 
     override fun onCleared() {
         login.dispose()
+        autoLoginFail.dispose()
         super.onCleared()
     }
 }

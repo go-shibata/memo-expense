@@ -53,6 +53,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         } ?: throw RuntimeException("Invalid arguments")
 
         activity?.run {
+            (this as AppCompatActivity).supportActionBar?.show()
             if (this is FragmentMainNavigator) {
                 viewModel.setNavigator(this)
             } else {
