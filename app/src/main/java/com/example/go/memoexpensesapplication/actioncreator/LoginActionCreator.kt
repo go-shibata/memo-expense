@@ -16,7 +16,7 @@ class LoginActionCreator @Inject constructor(
         currentUser?.let { user ->
             val mUser = User(user)
             dispatcher.dispatch(LoginAction.Login(mUser))
-        }
+        } ?: dispatcher.dispatch(LoginAction.AutoLoginFail())
     }
 
     fun createUser(mail: String, password: String) {

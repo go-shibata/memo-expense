@@ -58,11 +58,6 @@ class LoginFragment : Fragment() {
         compositeDisposable.clear()
     }
 
-    override fun onStart() {
-        super.onStart()
-        actionCreator.checkLogin()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
