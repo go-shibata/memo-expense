@@ -4,8 +4,11 @@ import com.example.go.memoexpensesapplication.action.TagListAction
 import io.reactivex.Flowable
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class TagListDispatcher : Dispatcher<TagListAction<*>> {
+@Singleton
+class TagListDispatcher @Inject constructor() : Dispatcher<TagListAction<*>> {
 
     private val dispatcherGetAllTags: FlowableProcessor<TagListAction.GetAllTags> =
         BehaviorProcessor.create()
