@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.activityViewModels
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
-import com.example.go.memoexpensesapplication.component.DaggerLoginComponent
 import com.example.go.memoexpensesapplication.databinding.FragmentLoginBinding
+import com.example.go.memoexpensesapplication.di.ViewModelFactory
+import com.example.go.memoexpensesapplication.di.component.DaggerLoginComponent
 import com.example.go.memoexpensesapplication.navigator.FragmentLoginNavigator
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -19,28 +20,29 @@ import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
 class LoginFragment : Fragment() {
-    private lateinit var viewModel: FragmentLoginViewModel
-    private lateinit var binding: FragmentLoginBinding
-    private val compositeDisposable = CompositeDisposable()
-
     @Inject
     lateinit var actionCreator: LoginActionCreator
+
+    @Inject
+    lateinit var factory: ViewModelFactory<FragmentLoginViewModel>
+
+    private val viewModel: FragmentLoginViewModel by activityViewModels { factory }
+    private lateinit var binding: FragmentLoginBinding
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val loginComponent = DaggerLoginComponent.create()
-        loginComponent.inject(this)
+        DaggerLoginComponent.create().inject(this)
 
         activity?.run {
-            viewModel = ViewModelProviders.of(this)[FragmentLoginViewModel::class.java]
             if (this is FragmentLoginNavigator) {
                 viewModel.setNavigator(this)
             } else {
                 throw RuntimeException("$this must implement FragmentLoginNavigator")
             }
         } ?: throw RuntimeException("Invalid Activity")
-        viewModel.inject(loginComponent)
+
         viewModel.authenticationFail
             .subscribe {
                 Toast.makeText(

@@ -5,14 +5,15 @@ import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.Preferences
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.MainActionCreator
-import com.example.go.memoexpensesapplication.component.DaggerMainComponent
 import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMainAddBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
+import com.example.go.memoexpensesapplication.di.ViewModelFactory
+import com.example.go.memoexpensesapplication.di.component.DaggerMainComponent
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.model.User
 import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator
@@ -24,17 +25,20 @@ import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
 class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
-    private lateinit var expenseListAdapter: ExpenseListAdapter
-
-    private lateinit var viewModel: FragmentMainViewModel
-    private lateinit var binding: FragmentMainBinding
-    private val compositeDisposable = CompositeDisposable()
-
     @Inject
     lateinit var actionCreator: MainActionCreator
 
     @Inject
     lateinit var pref: Preferences
+
+    @Inject
+    lateinit var factory: ViewModelFactory<FragmentMainViewModel>
+
+    private lateinit var expenseListAdapter: ExpenseListAdapter
+
+    private val viewModel: FragmentMainViewModel by activityViewModels { factory }
+    private lateinit var binding: FragmentMainBinding
+    private val compositeDisposable = CompositeDisposable()
 
     private lateinit var user: User
 
@@ -49,14 +53,12 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         } ?: throw RuntimeException("Invalid arguments")
 
         activity?.run {
-            viewModel = ViewModelProviders.of(this)[FragmentMainViewModel::class.java]
             if (this is FragmentMainNavigator) {
                 viewModel.setNavigator(this)
             } else {
                 throw RuntimeException("$this must implement FragmentMainNavigator")
             }
         } ?: throw RuntimeException("Invalid activity")
-        viewModel.inject(mainComponent)
         viewModel.expenses
             .subscribe { expenses -> expenseListAdapter.update(expenses) }
             .addTo(compositeDisposable)
@@ -131,7 +133,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         val binding = DialogViewFragmentMainAddBinding
             .inflate(layoutInflater, view as ViewGroup, false)
         val tags = pref.getTags().toList()
-        binding.tag.adapter = TagListSpinnerAdapter(context!!, tags)
+        binding.tag.adapter = TagListSpinnerAdapter(requireContext(), tags)
 
         val builder = context?.let {
             AlertDialog.Builder(it)
