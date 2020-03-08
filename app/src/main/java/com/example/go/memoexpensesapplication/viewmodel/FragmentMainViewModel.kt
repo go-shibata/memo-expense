@@ -1,7 +1,6 @@
 package com.example.go.memoexpensesapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.go.memoexpensesapplication.di.component.MainComponent
 import com.example.go.memoexpensesapplication.dispatcher.MainDispatcher
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator
@@ -11,12 +10,11 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.processors.PublishProcessor
 import javax.inject.Inject
 
-class FragmentMainViewModel : ViewModel() {
+class FragmentMainViewModel @Inject constructor(
+    dispatcher: MainDispatcher
+) : ViewModel() {
 
-    private lateinit var navigator: FragmentMainNavigator
-
-    @Inject
-    lateinit var dispatcher: MainDispatcher
+    private var navigator: FragmentMainNavigator? = null
 
     private val _expenses = PublishProcessor.create<List<Expense>>()
     val expenses: Flowable<List<Expense>> = _expenses
@@ -24,18 +22,9 @@ class FragmentMainViewModel : ViewModel() {
     val addExpense: Flowable<Expense> = _addExpense
     private val _deleteExpense = PublishProcessor.create<Expense>()
     val deleteExpense: Flowable<Expense> = _deleteExpense
-    private lateinit var moveToTagList: Disposable
+    private val moveToTagList: Disposable
 
-    fun setNavigator(navigator: FragmentMainNavigator) {
-        this.navigator = navigator
-    }
-
-    fun inject(mainComponent: MainComponent) {
-        mainComponent.inject(this)
-        subscribe()
-    }
-
-    private fun subscribe() {
+    init {
         dispatcher.onGetAllExpenses
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
@@ -51,7 +40,13 @@ class FragmentMainViewModel : ViewModel() {
         moveToTagList = dispatcher.onMoveToTagList
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { navigator.onTransitionTagList() }
+            .subscribe {
+                navigator?.onTransitionTagList() ?: throw RuntimeException("Navigator must be set")
+            }
+    }
+
+    fun setNavigator(navigator: FragmentMainNavigator) {
+        this.navigator = navigator
     }
 
     override fun onCleared() {
