@@ -8,14 +8,15 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.TagListActionCreator
-import com.example.go.memoexpensesapplication.di.component.DaggerTagListComponent
 import com.example.go.memoexpensesapplication.databinding.DialogAddTagBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentTagListBinding
+import com.example.go.memoexpensesapplication.di.ViewModelFactory
+import com.example.go.memoexpensesapplication.di.component.DaggerTagListComponent
 import com.example.go.memoexpensesapplication.view.adapter.TagListAdapter
 import com.example.go.memoexpensesapplication.viewmodel.FragmentTagListViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -23,25 +24,23 @@ import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
 class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
-    private lateinit var tagListAdapter: TagListAdapter
-
-    private lateinit var viewModel: FragmentTagListViewModel
-    private lateinit var binding: FragmentTagListBinding
-    private val compositeDisposable = CompositeDisposable()
-
     @Inject
     lateinit var actionCreator: TagListActionCreator
+
+    @Inject
+    lateinit var factory: ViewModelFactory<FragmentTagListViewModel>
+
+    private lateinit var tagListAdapter: TagListAdapter
+
+    private val viewModel: FragmentTagListViewModel by activityViewModels { factory }
+    private lateinit var binding: FragmentTagListBinding
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val tagListComponent = DaggerTagListComponent.create()
-        tagListComponent.inject(this)
+        DaggerTagListComponent.create().inject(this)
 
-        activity?.run {
-            viewModel = ViewModelProviders.of(this)[FragmentTagListViewModel::class.java]
-        } ?: throw RuntimeException("Invalid activity")
-        viewModel.inject(tagListComponent)
         viewModel.tags
             .subscribe { tags -> tagListAdapter.update(tags) }
             .addTo(compositeDisposable)
