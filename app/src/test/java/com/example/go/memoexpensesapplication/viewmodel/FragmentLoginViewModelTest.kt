@@ -25,7 +25,7 @@ class FragmentLoginViewModelTest {
     val rule = RxImmediateSchedulerRule()
 
     @Spy
-    lateinit var dispatcher: LoginDispatcher
+    val dispatcher = LoginDispatcher()
 
     @Mock
     lateinit var navigator: FragmentLoginNavigator
