@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
+import com.example.go.memoexpensesapplication.activity.MainActivity
 import com.example.go.memoexpensesapplication.databinding.FragmentSplashBinding
 import com.example.go.memoexpensesapplication.di.ViewModelFactory
 import com.example.go.memoexpensesapplication.di.component.DaggerLoginComponent
-import com.example.go.memoexpensesapplication.navigator.FragmentLoginNavigator
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
 import javax.inject.Inject
 
@@ -31,11 +32,11 @@ class SplashFragment : Fragment() {
         DaggerLoginComponent.create().inject(this)
 
         activity?.run {
-            if (this is FragmentLoginNavigator) {
+            (this as AppCompatActivity).supportActionBar?.hide()
+            if (this is MainActivity) {
+                loginComponent.inject(this@SplashFragment)
                 viewModel.setNavigator(this)
-            } else {
-                throw RuntimeException("$this must implement FragmentLoginNavigator")
-            }
+            } else throw RuntimeException("$this must be MainActivity")
         } ?: throw RuntimeException("Invalid Activity")
     }
 

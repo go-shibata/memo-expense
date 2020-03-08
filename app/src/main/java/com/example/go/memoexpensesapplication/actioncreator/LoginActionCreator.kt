@@ -5,7 +5,9 @@ import com.example.go.memoexpensesapplication.dispatcher.LoginDispatcher
 import com.example.go.memoexpensesapplication.model.User
 import com.google.firebase.auth.FirebaseAuth
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class LoginActionCreator @Inject constructor(
     private val mAuth: FirebaseAuth,
     private val dispatcher: LoginDispatcher
