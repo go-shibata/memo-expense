@@ -5,7 +5,9 @@ import com.example.go.memoexpensesapplication.dispatcher.LoginDispatcher
 import com.example.go.memoexpensesapplication.model.User
 import com.google.firebase.auth.FirebaseAuth
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class LoginActionCreator @Inject constructor(
     private val mAuth: FirebaseAuth,
     private val dispatcher: LoginDispatcher
@@ -16,7 +18,7 @@ class LoginActionCreator @Inject constructor(
         currentUser?.let { user ->
             val mUser = User(user)
             dispatcher.dispatch(LoginAction.Login(mUser))
-        }
+        } ?: dispatcher.dispatch(LoginAction.AutoLoginFail())
     }
 
     fun createUser(mail: String, password: String) {
