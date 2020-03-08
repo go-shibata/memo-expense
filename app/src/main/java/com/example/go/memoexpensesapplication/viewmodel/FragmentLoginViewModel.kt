@@ -27,9 +27,12 @@ class FragmentLoginViewModel @Inject constructor(
         login = dispatcher.onLogin
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { user ->
-                navigator?.onLoggedIn(user) ?: throw RuntimeException("Navigator must be set")
-            }
+            .subscribe(
+                { user ->
+                    navigator?.onLoggedIn(user) ?: throw RuntimeException("Navigator must be set")
+                },
+                { throw it }
+            )
         dispatcher.onAuthenticationFail
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())

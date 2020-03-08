@@ -34,7 +34,6 @@ class FragmentLoginViewModelTest {
     @Before
     fun setUp() {
         viewModel = FragmentLoginViewModel(dispatcher)
-        viewModel.setNavigator(navigator)
     }
 
     @After
@@ -44,6 +43,8 @@ class FragmentLoginViewModelTest {
     @Test
     fun occurredLoginAction_confirmNavigatorCalled() {
         val user = User("user1", "mail2", "uid3")
+        viewModel.setNavigator(navigator)
+
         dispatcher.dispatch(LoginAction.Login(user))
         argumentCaptor<User>().apply {
             verify(navigator, times(1)).onLoggedIn(capture())

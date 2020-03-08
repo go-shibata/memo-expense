@@ -40,9 +40,13 @@ class FragmentMainViewModel @Inject constructor(
         moveToTagList = dispatcher.onMoveToTagList
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                navigator?.onTransitionTagList() ?: throw RuntimeException("Navigator must be set")
-            }
+            .subscribe(
+                {
+                    navigator?.onTransitionTagList()
+                        ?: throw RuntimeException("Navigator must be set")
+                },
+                { throw it }
+            )
     }
 
     fun setNavigator(navigator: FragmentMainNavigator) {
