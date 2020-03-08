@@ -1,4 +1,4 @@
-package com.example.go.memoexpensesapplication.module
+package com.example.go.memoexpensesapplication.di.module
 
 import com.example.go.memoexpensesapplication.network.Database
 import dagger.Module

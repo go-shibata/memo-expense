@@ -1,7 +1,7 @@
 package com.example.go.memoexpensesapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.go.memoexpensesapplication.component.MainComponent
+import com.example.go.memoexpensesapplication.di.component.MainComponent
 import com.example.go.memoexpensesapplication.dispatcher.MainDispatcher
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator

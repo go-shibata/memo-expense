@@ -1,7 +1,7 @@
 package com.example.go.memoexpensesapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.go.memoexpensesapplication.component.TagListComponent
+import com.example.go.memoexpensesapplication.di.component.TagListComponent
 import com.example.go.memoexpensesapplication.dispatcher.TagListDispatcher
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers

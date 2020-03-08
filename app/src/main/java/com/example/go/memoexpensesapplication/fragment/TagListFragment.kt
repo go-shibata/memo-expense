@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.TagListActionCreator
-import com.example.go.memoexpensesapplication.component.DaggerTagListComponent
+import com.example.go.memoexpensesapplication.di.component.DaggerTagListComponent
 import com.example.go.memoexpensesapplication.databinding.DialogAddTagBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentTagListBinding
 import com.example.go.memoexpensesapplication.view.adapter.TagListAdapter

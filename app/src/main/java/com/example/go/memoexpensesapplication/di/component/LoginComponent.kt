@@ -1,9 +1,9 @@
-package com.example.go.memoexpensesapplication.component
+package com.example.go.memoexpensesapplication.di.component
 
 import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
 import com.example.go.memoexpensesapplication.fragment.LoginFragment
-import com.example.go.memoexpensesapplication.module.FirebaseModule
-import com.example.go.memoexpensesapplication.module.LoginModule
+import com.example.go.memoexpensesapplication.di.module.FirebaseModule
+import com.example.go.memoexpensesapplication.di.module.LoginModule
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
 import dagger.Component
 import javax.inject.Singleton

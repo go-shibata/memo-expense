@@ -1,10 +1,10 @@
-package com.example.go.memoexpensesapplication.component
+package com.example.go.memoexpensesapplication.di.component
 
 import com.example.go.memoexpensesapplication.actioncreator.MainActionCreator
 import com.example.go.memoexpensesapplication.fragment.MainFragment
-import com.example.go.memoexpensesapplication.module.DatabaseModule
-import com.example.go.memoexpensesapplication.module.MainModule
-import com.example.go.memoexpensesapplication.module.PreferencesModule
+import com.example.go.memoexpensesapplication.di.module.DatabaseModule
+import com.example.go.memoexpensesapplication.di.module.MainModule
+import com.example.go.memoexpensesapplication.di.module.PreferencesModule
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
 import dagger.Component
 import javax.inject.Singleton

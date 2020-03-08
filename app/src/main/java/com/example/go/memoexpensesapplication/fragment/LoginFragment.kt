@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
-import com.example.go.memoexpensesapplication.component.DaggerLoginComponent
+import com.example.go.memoexpensesapplication.di.component.DaggerLoginComponent
 import com.example.go.memoexpensesapplication.databinding.FragmentLoginBinding
 import com.example.go.memoexpensesapplication.navigator.FragmentLoginNavigator
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel

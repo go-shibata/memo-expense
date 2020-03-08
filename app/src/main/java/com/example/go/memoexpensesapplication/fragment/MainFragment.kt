@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.Preferences
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.MainActionCreator
-import com.example.go.memoexpensesapplication.component.DaggerMainComponent
+import com.example.go.memoexpensesapplication.di.component.DaggerMainComponent
 import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMainAddBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.model.Expense

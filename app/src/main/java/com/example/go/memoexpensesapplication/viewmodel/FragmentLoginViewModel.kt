@@ -2,7 +2,7 @@ package com.example.go.memoexpensesapplication.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.go.memoexpensesapplication.component.LoginComponent
+import com.example.go.memoexpensesapplication.di.component.LoginComponent
 import com.example.go.memoexpensesapplication.dispatcher.LoginDispatcher
 import com.example.go.memoexpensesapplication.navigator.FragmentLoginNavigator
 import io.reactivex.Flowable
