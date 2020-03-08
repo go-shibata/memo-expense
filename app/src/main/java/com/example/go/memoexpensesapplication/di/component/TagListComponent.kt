@@ -1,15 +1,14 @@
-package com.example.go.memoexpensesapplication.component
+package com.example.go.memoexpensesapplication.di.component
 
 import com.example.go.memoexpensesapplication.actioncreator.TagListActionCreator
+import com.example.go.memoexpensesapplication.di.module.PreferencesModule
 import com.example.go.memoexpensesapplication.fragment.TagListFragment
-import com.example.go.memoexpensesapplication.module.PreferencesModule
-import com.example.go.memoexpensesapplication.module.TagListModule
 import com.example.go.memoexpensesapplication.viewmodel.FragmentTagListViewModel
 import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [PreferencesModule::class, TagListModule::class])
+@Component(modules = [PreferencesModule::class])
 interface TagListComponent {
     fun inject(actionCreator: TagListActionCreator)
     fun inject(viewModel: FragmentTagListViewModel)
