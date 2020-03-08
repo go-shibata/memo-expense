@@ -4,8 +4,11 @@ import com.example.go.memoexpensesapplication.action.LoginAction
 import io.reactivex.Flowable
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class LoginDispatcher : Dispatcher<LoginAction<*>> {
+@Singleton
+class LoginDispatcher @Inject constructor() : Dispatcher<LoginAction<*>> {
 
     private val dispatcherLogin: FlowableProcessor<LoginAction.Login> = BehaviorProcessor.create()
     val onLogin: Flowable<LoginAction.Login> = dispatcherLogin

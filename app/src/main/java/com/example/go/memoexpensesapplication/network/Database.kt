@@ -4,8 +4,11 @@ import android.util.Log
 import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.model.Expense
 import com.google.firebase.firestore.FirebaseFirestore
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class Database {
+@Singleton
+class Database @Inject constructor() {
 
     private fun getDatabase(): FirebaseFirestore = FirebaseFirestore.getInstance()
 

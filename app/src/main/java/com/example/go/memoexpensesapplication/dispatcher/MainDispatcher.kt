@@ -4,8 +4,11 @@ import com.example.go.memoexpensesapplication.action.MainAction
 import io.reactivex.Flowable
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class MainDispatcher : Dispatcher<MainAction<*>> {
+@Singleton
+class MainDispatcher @Inject constructor() : Dispatcher<MainAction<*>> {
 
     private val dispatcherGetAllExpenses: FlowableProcessor<MainAction.GetAllExpenses> =
         BehaviorProcessor.create()
