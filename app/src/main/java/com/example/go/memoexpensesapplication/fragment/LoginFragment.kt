@@ -13,7 +13,6 @@ import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
 import com.example.go.memoexpensesapplication.activity.MainActivity
 import com.example.go.memoexpensesapplication.databinding.FragmentLoginBinding
 import com.example.go.memoexpensesapplication.di.ViewModelFactory
-import com.example.go.memoexpensesapplication.di.component.DaggerLoginComponent
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -32,8 +31,6 @@ class LoginFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        DaggerLoginComponent.create().inject(this)
 
         activity?.run {
             (this as AppCompatActivity).supportActionBar?.show()

@@ -11,7 +11,6 @@ import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
 import com.example.go.memoexpensesapplication.activity.MainActivity
 import com.example.go.memoexpensesapplication.databinding.FragmentSplashBinding
 import com.example.go.memoexpensesapplication.di.ViewModelFactory
-import com.example.go.memoexpensesapplication.di.component.DaggerLoginComponent
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
 import javax.inject.Inject
 
@@ -28,8 +27,6 @@ class SplashFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        DaggerLoginComponent.create().inject(this)
 
         activity?.run {
             (this as AppCompatActivity).supportActionBar?.hide()
