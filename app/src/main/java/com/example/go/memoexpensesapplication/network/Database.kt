@@ -30,6 +30,25 @@ class Database @Inject constructor() {
             }
     }
 
+    fun editExpense(expense: Expense, exec: (() -> Unit)? = null) {
+        val data = mapOf(
+            "uid" to expense.uid,
+            "tag" to expense.tag,
+            "value" to expense.value,
+            "note" to expense.note
+        )
+        getDatabase().collection(COLLECTION_EXPENSE)
+            .document(expense.id ?: throw RuntimeException("Document id not found"))
+            .set(data)
+            .addOnSuccessListener {
+                Log.d(LOG_TAG, "Document edited with ID: ${expense.id}")
+                exec?.invoke()
+            }
+            .addOnFailureListener {
+                Log.w(LOG_TAG, "Error editing document", it)
+            }
+    }
+
     fun readExpenses(uid: String, exec: ((List<Expense>) -> Unit)? = null) {
         getDatabase().collection(COLLECTION_EXPENSE)
             .whereEqualTo("uid", uid)

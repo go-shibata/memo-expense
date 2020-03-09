@@ -55,6 +55,7 @@ class MainActionCreatorTest {
                 .isEqualTo(expenses)
         }
         verify(dispatcher, never()).dispatch(any<MainAction.AddExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.EditExpense>())
         verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
         verify(dispatcher, never()).dispatch(any<MainAction.MoveToTagList>())
     }
@@ -79,6 +80,30 @@ class MainActionCreatorTest {
                 .extracting("data")
                 .isEqualTo(expectedExpense)
         }
+        verify(dispatcher, never()).dispatch(any<MainAction.EditExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.MoveToTagList>())
+    }
+
+    @Test
+    fun editExpense_confirmDispatchEditExpenseAction() {
+        val expense = Expense("uid1", "tag1", 1, "note1")
+        whenever(database.editExpense(eq(expense), any()))
+            .thenAnswer { invocation ->
+                @Suppress("UNCHECKED_CAST")
+                (invocation.arguments[1] as (() -> Unit)?)?.invoke()
+            }
+
+        actionCreator.editExpense(expense)
+        verify(database, times(1)).editExpense(eq(expense), any())
+        verify(dispatcher, never()).dispatch(any<MainAction.GetAllExpenses>())
+        verify(dispatcher, never()).dispatch(any<MainAction.AddExpense>())
+        argumentCaptor<MainAction.EditExpense>().apply {
+            verify(dispatcher, times(1)).dispatch(capture())
+            assertThat(firstValue)
+                .extracting("data")
+                .isEqualTo(expense)
+        }
         verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
         verify(dispatcher, never()).dispatch(any<MainAction.MoveToTagList>())
     }
@@ -96,6 +121,7 @@ class MainActionCreatorTest {
         verify(database, times(1)).deleteExpenses(eq(expense), any())
         verify(dispatcher, never()).dispatch(any<MainAction.GetAllExpenses>())
         verify(dispatcher, never()).dispatch(any<MainAction.AddExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.EditExpense>())
         argumentCaptor<MainAction.DeleteExpense>().apply {
             verify(dispatcher, times(1)).dispatch(capture())
             assertThat(firstValue)
@@ -110,6 +136,7 @@ class MainActionCreatorTest {
         actionCreator.moveToTagList()
         verify(dispatcher, never()).dispatch(any<MainAction.GetAllExpenses>())
         verify(dispatcher, never()).dispatch(any<MainAction.AddExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.EditExpense>())
         verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
         verify(dispatcher, times(1)).dispatch(any<MainAction.MoveToTagList>())
     }

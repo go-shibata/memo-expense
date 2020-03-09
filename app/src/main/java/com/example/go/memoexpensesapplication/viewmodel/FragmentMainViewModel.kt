@@ -20,6 +20,8 @@ class FragmentMainViewModel @Inject constructor(
     val expenses: Flowable<List<Expense>> = _expenses
     private val _addExpense = PublishProcessor.create<Expense>()
     val addExpense: Flowable<Expense> = _addExpense
+    private val _editExpense = PublishProcessor.create<Expense>()
+    val editExpense: Flowable<Expense> = _editExpense
     private val _deleteExpense = PublishProcessor.create<Expense>()
     val deleteExpense: Flowable<Expense> = _deleteExpense
     private val moveToTagList: Disposable
@@ -33,6 +35,10 @@ class FragmentMainViewModel @Inject constructor(
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(_addExpense)
+        dispatcher.onEditExpense
+            .map { action -> action.data }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(_editExpense)
         dispatcher.onDeleteExpense
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())

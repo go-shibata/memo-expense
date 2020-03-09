@@ -18,6 +18,10 @@ class MainDispatcher @Inject constructor() : Dispatcher<MainAction<*>> {
         BehaviorProcessor.create()
     val onAddExpense: Flowable<MainAction.AddExpense> = dispatcherAddExpense
 
+    private val dispatcherEditExpense: FlowableProcessor<MainAction.EditExpense> =
+        BehaviorProcessor.create()
+    val onEditExpense: Flowable<MainAction.EditExpense> = dispatcherEditExpense
+
     private val dispatcherDeleteExpense: FlowableProcessor<MainAction.DeleteExpense> =
         BehaviorProcessor.create()
     val onDeleteExpense: Flowable<MainAction.DeleteExpense> = dispatcherDeleteExpense
@@ -30,6 +34,7 @@ class MainDispatcher @Inject constructor() : Dispatcher<MainAction<*>> {
         when (action) {
             is MainAction.GetAllExpenses -> dispatcherGetAllExpenses.onNext(action)
             is MainAction.AddExpense -> dispatcherAddExpense.onNext(action)
+            is MainAction.EditExpense -> dispatcherEditExpense.onNext(action)
             is MainAction.DeleteExpense -> dispatcherDeleteExpense.onNext(action)
             is MainAction.MoveToTagList -> dispatcherMoveToTagList.onNext(action)
         }
