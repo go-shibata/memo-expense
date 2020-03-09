@@ -80,7 +80,7 @@ class LoginActionCreatorTest {
 
         actionCreator.createUser(mail, password)
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
-        verify(dispatcher, times(1)).dispatch(any<LoginAction.AuthenticationFail>())
+        verify(dispatcher, times(1)).dispatch(any<LoginAction.CreateUserFail>())
     }
 
     @Test
@@ -92,7 +92,7 @@ class LoginActionCreatorTest {
 
         actionCreator.createUser(mail, password)
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
-        verify(dispatcher, times(1)).dispatch(any<LoginAction.AuthenticationFail>())
+        verify(dispatcher, times(1)).dispatch(any<LoginAction.CreateUserFail>())
     }
 
     @Test

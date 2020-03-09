@@ -40,6 +40,14 @@ class LoginFragment : Fragment() {
             } else throw RuntimeException("$this must be MainActivity")
         } ?: throw RuntimeException("Invalid Activity")
 
+        viewModel.createUserFail
+            .subscribe {
+                Toast.makeText(
+                    context,
+                    getString(R.string.fragment_login_create_user_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }.addTo(compositeDisposable)
         viewModel.authenticationFail
             .subscribe {
                 Toast.makeText(

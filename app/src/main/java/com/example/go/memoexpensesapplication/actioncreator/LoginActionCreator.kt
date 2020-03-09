@@ -32,7 +32,7 @@ class LoginActionCreator @Inject constructor(
                     }
                 }
 
-                dispatcher.dispatch(LoginAction.AuthenticationFail())
+                dispatcher.dispatch(LoginAction.CreateUserFail())
             }
     }
 
