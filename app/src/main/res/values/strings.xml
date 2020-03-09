@@ -13,6 +13,7 @@
     <string name="fragment_login_password">パスワード</string>
     <string name="fragment_login_create_user">ユーザー作成</string>
     <string name="fragment_login_login">ログイン</string>
+    <string name="fragment_login_create_user_failed">ユーザー作成に失敗しました</string>
     <string name="fragment_login_authentication_failed">認証に失敗しました</string>
 
     <string name="fragment_main_add_title">出費メモの追加</string>

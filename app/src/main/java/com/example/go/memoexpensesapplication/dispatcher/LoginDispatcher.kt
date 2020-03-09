@@ -13,6 +13,10 @@ class LoginDispatcher @Inject constructor() : Dispatcher<LoginAction<*>> {
     private val dispatcherLogin: FlowableProcessor<LoginAction.Login> = BehaviorProcessor.create()
     val onLogin: Flowable<LoginAction.Login> = dispatcherLogin
 
+    private val dispatcherCreateUserFail: FlowableProcessor<LoginAction.CreateUserFail> =
+        BehaviorProcessor.create()
+    val onCreateUserFail: Flowable<LoginAction.CreateUserFail> = dispatcherCreateUserFail
+
     private val dispatcherAuthenticationFail: FlowableProcessor<LoginAction.AuthenticationFail> =
         BehaviorProcessor.create()
     val onAuthenticationFail: Flowable<LoginAction.AuthenticationFail> =
@@ -25,6 +29,7 @@ class LoginDispatcher @Inject constructor() : Dispatcher<LoginAction<*>> {
     override fun dispatch(action: LoginAction<*>) {
         when (action) {
             is LoginAction.Login -> dispatcherLogin.onNext(action)
+            is LoginAction.CreateUserFail -> dispatcherCreateUserFail.onNext(action)
             is LoginAction.AuthenticationFail -> dispatcherAuthenticationFail.onNext(action)
             is LoginAction.AutoLoginFail -> dispatcherAutoLoginFail.onNext(action)
         }

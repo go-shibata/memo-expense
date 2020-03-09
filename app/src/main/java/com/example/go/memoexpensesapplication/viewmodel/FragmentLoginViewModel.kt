@@ -22,6 +22,8 @@ class FragmentLoginViewModel @Inject constructor(
     private val login: Disposable
     private val _authenticationFail = PublishProcessor.create<Unit>()
     val authenticationFail: Flowable<Unit> = _authenticationFail
+    private val _createUserFail = PublishProcessor.create<Unit>()
+    val createUserFail: Flowable<Unit> = _createUserFail
     private val autoLoginFail: Disposable
 
     init {
@@ -34,6 +36,10 @@ class FragmentLoginViewModel @Inject constructor(
                 },
                 { throw it }
             )
+        dispatcher.onCreateUserFail
+            .map { action -> action.data }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(_createUserFail)
         dispatcher.onAuthenticationFail
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
