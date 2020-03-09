@@ -43,6 +43,8 @@ class LoginActionCreatorTest {
         actionCreator.checkLogin()
         verify(dispatcher, times(1)).dispatch(any<LoginAction.Login>())
         verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
     @Test
@@ -52,6 +54,8 @@ class LoginActionCreatorTest {
         actionCreator.checkLogin()
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
         verify(dispatcher, times(1)).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
     @Test
@@ -67,6 +71,8 @@ class LoginActionCreatorTest {
 
         actionCreator.createUser(mail, password)
         verify(dispatcher, times(1)).dispatch(any<LoginAction.Login>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
         verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
@@ -80,7 +86,9 @@ class LoginActionCreatorTest {
 
         actionCreator.createUser(mail, password)
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
         verify(dispatcher, times(1)).dispatch(any<LoginAction.CreateUserFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
     @Test
@@ -92,7 +100,9 @@ class LoginActionCreatorTest {
 
         actionCreator.createUser(mail, password)
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
         verify(dispatcher, times(1)).dispatch(any<LoginAction.CreateUserFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
     @Test
@@ -108,6 +118,8 @@ class LoginActionCreatorTest {
 
         actionCreator.login(mail, password)
         verify(dispatcher, times(1)).dispatch(any<LoginAction.Login>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
         verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
@@ -121,6 +133,8 @@ class LoginActionCreatorTest {
 
         actionCreator.login(mail, password)
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
         verify(dispatcher, times(1)).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
@@ -133,6 +147,8 @@ class LoginActionCreatorTest {
 
         actionCreator.login(mail, password)
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
         verify(dispatcher, times(1)).dispatch(any<LoginAction.AuthenticationFail>())
     }
 }
