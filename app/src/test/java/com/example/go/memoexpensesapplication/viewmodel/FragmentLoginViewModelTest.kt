@@ -65,7 +65,7 @@ class FragmentLoginViewModelTest {
     }
 
     @Test
-    fun occurredAutoLoginFaailedAction_confirmNavigatorCalled() {
+    fun occurredAutoLoginFailedAction_confirmNavigatorCalled() {
         viewModel.setNavigator(navigator)
 
         dispatcher.dispatch(LoginAction.AutoLoginFail())
