@@ -14,6 +14,10 @@ import com.example.go.memoexpensesapplication.activity.MainActivity
 import com.example.go.memoexpensesapplication.databinding.FragmentLoginBinding
 import com.example.go.memoexpensesapplication.di.ViewModelFactory
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
@@ -40,14 +44,12 @@ class LoginFragment : Fragment() {
             } else throw RuntimeException("$this must be MainActivity")
         } ?: throw RuntimeException("Invalid Activity")
 
+        viewModel.createUserFail
+            .subscribe { exception -> makeToastForLoginFailure(exception, Failure.CREATE_USER) }
+            .addTo(compositeDisposable)
         viewModel.authenticationFail
-            .subscribe {
-                Toast.makeText(
-                    context,
-                    getString(R.string.fragment_login_authentication_failed),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }.addTo(compositeDisposable)
+            .subscribe { exception -> makeToastForLoginFailure(exception, Failure.AUTHENTICATION) }
+            .addTo(compositeDisposable)
     }
 
     override fun onDestroy() {
@@ -84,6 +86,38 @@ class LoginFragment : Fragment() {
         val mail = viewModel.mail.value ?: return
         val password = viewModel.password.value ?: return
         actionCreator.login(mail, password)
+    }
+
+    private fun makeToastForLoginFailure(exception: Exception?, failure: Failure) {
+        Toast.makeText(
+            context,
+            getTextFromException(exception, failure),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun getTextFromException(exception: Exception?, failure: Failure): String {
+        val default = when (failure) {
+            Failure.CREATE_USER -> getString(R.string.fragment_login_create_user_failed)
+            Failure.AUTHENTICATION -> getString(R.string.fragment_login_authentication_failed)
+        }
+        exception ?: return default
+        return when (exception as FirebaseAuthException) {
+            is FirebaseAuthUserCollisionException -> getString(R.string.fragment_login_mail_address_is_already_used)
+            is FirebaseAuthInvalidCredentialsException -> {
+                if (exception.message?.contains("password") == true) {
+                    getString(R.string.fragment_login_password_invalid)
+                } else {
+                    getString(R.string.fragment_login_mail_address_invalid)
+                }
+            }
+            is FirebaseAuthInvalidUserException -> getString(R.string.fragment_login_cannot_find_user)
+            else -> default
+        }
+    }
+
+    private enum class Failure {
+        CREATE_USER, AUTHENTICATION
     }
 
     companion object {

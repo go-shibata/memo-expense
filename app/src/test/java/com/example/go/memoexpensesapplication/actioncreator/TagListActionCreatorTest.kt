@@ -3,10 +3,7 @@ package com.example.go.memoexpensesapplication.actioncreator
 import com.example.go.memoexpensesapplication.Preferences
 import com.example.go.memoexpensesapplication.action.TagListAction
 import com.example.go.memoexpensesapplication.dispatcher.TagListDispatcher
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -46,6 +43,8 @@ class TagListActionCreatorTest {
                 .extracting("data")
                 .isEqualTo(tags.toList())
         }
+        verify(dispatcher, never()).dispatch(any<TagListAction.AddTag>())
+        verify(dispatcher, never()).dispatch(any<TagListAction.DeleteTag>())
     }
 
     @Test
@@ -53,12 +52,14 @@ class TagListActionCreatorTest {
         val tag = "tag1"
 
         actionCreator.addTag(tag)
+        verify(dispatcher, never()).dispatch(any<TagListAction.GetAllTags>())
         argumentCaptor<TagListAction.AddTag>().apply {
             verify(dispatcher, times(1)).dispatch(capture())
             assertThat(firstValue)
                 .extracting("data")
                 .isEqualTo(tag)
         }
+        verify(dispatcher, never()).dispatch(any<TagListAction.DeleteTag>())
     }
 
     @Test
@@ -66,6 +67,8 @@ class TagListActionCreatorTest {
         val tag = "tag1"
 
         actionCreator.deleteTag(tag)
+        verify(dispatcher, never()).dispatch(any<TagListAction.GetAllTags>())
+        verify(dispatcher, never()).dispatch(any<TagListAction.AddTag>())
         argumentCaptor<TagListAction.DeleteTag>().apply {
             verify(dispatcher, times(1)).dispatch(capture())
             assertThat(firstValue)

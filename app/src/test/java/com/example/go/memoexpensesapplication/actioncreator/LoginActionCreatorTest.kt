@@ -10,6 +10,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.nhaarman.mockitokotlin2.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -22,7 +23,7 @@ class LoginActionCreatorTest {
 
     private val mAuth: FirebaseAuth = mock()
     private val dispatcher: LoginDispatcher = mock()
-    lateinit var actionCreator: LoginActionCreator
+    private lateinit var actionCreator: LoginActionCreator
 
     @Before
     fun setUp() {
@@ -43,6 +44,8 @@ class LoginActionCreatorTest {
         actionCreator.checkLogin()
         verify(dispatcher, times(1)).dispatch(any<LoginAction.Login>())
         verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
     @Test
@@ -52,6 +55,8 @@ class LoginActionCreatorTest {
         actionCreator.checkLogin()
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
         verify(dispatcher, times(1)).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
     @Test
@@ -67,6 +72,8 @@ class LoginActionCreatorTest {
 
         actionCreator.createUser(mail, password)
         verify(dispatcher, times(1)).dispatch(any<LoginAction.Login>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
         verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
@@ -80,19 +87,29 @@ class LoginActionCreatorTest {
 
         actionCreator.createUser(mail, password)
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
-        verify(dispatcher, times(1)).dispatch(any<LoginAction.AuthenticationFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, times(1)).dispatch(any<LoginAction.CreateUserFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
     @Test
     fun createUser_whenFailure_confirmDispatchAuthenticationFailAction() {
         val mail = "mail1"
         val password = "password1"
-        val task = Tasks.forException<AuthResult>(Exception())
+        val exception = Exception()
+        val task = Tasks.forException<AuthResult>(exception)
         whenever(mAuth.createUserWithEmailAndPassword(mail, password)).thenReturn(task)
 
         actionCreator.createUser(mail, password)
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
-        verify(dispatcher, times(1)).dispatch(any<LoginAction.AuthenticationFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        argumentCaptor<LoginAction.CreateUserFail>().apply {
+            verify(dispatcher, times(1)).dispatch(capture())
+            assertThat(firstValue)
+                .extracting("data")
+                .isEqualTo(exception)
+        }
+        verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
     @Test
@@ -108,6 +125,8 @@ class LoginActionCreatorTest {
 
         actionCreator.login(mail, password)
         verify(dispatcher, times(1)).dispatch(any<LoginAction.Login>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
         verify(dispatcher, never()).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
@@ -121,6 +140,8 @@ class LoginActionCreatorTest {
 
         actionCreator.login(mail, password)
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
         verify(dispatcher, times(1)).dispatch(any<LoginAction.AuthenticationFail>())
     }
 
@@ -128,11 +149,19 @@ class LoginActionCreatorTest {
     fun login_whenFailure_confirmDispatchAuthenticationFailAction() {
         val mail = "mail1"
         val password = "password1"
-        val task = Tasks.forException<AuthResult>(Exception())
+        val exception = Exception()
+        val task = Tasks.forException<AuthResult>(exception)
         whenever(mAuth.signInWithEmailAndPassword(mail, password)).thenReturn(task)
 
         actionCreator.login(mail, password)
         verify(dispatcher, never()).dispatch(any<LoginAction.Login>())
-        verify(dispatcher, times(1)).dispatch(any<LoginAction.AuthenticationFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.AutoLoginFail>())
+        verify(dispatcher, never()).dispatch(any<LoginAction.CreateUserFail>())
+        argumentCaptor<LoginAction.AuthenticationFail>().apply {
+            verify(dispatcher, times(1)).dispatch(capture())
+            assertThat(firstValue)
+                .extracting("data")
+                .isEqualTo(exception)
+        }
     }
 }
