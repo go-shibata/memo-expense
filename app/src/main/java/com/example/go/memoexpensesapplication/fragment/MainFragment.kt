@@ -10,13 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.Preferences
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.MainActionCreator
+import com.example.go.memoexpensesapplication.activity.MainActivity
 import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMainAddBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.di.ViewModelFactory
-import com.example.go.memoexpensesapplication.di.component.DaggerMainComponent
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.model.User
-import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator
 import com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter
 import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
@@ -45,21 +44,18 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val mainComponent = DaggerMainComponent.create()
-        mainComponent.inject(this)
-
         arguments?.run {
             user = getSerializable(TAG_USER) as? User ?: throw RuntimeException("Invalid arguments")
         } ?: throw RuntimeException("Invalid arguments")
 
         activity?.run {
             (this as AppCompatActivity).supportActionBar?.show()
-            if (this is FragmentMainNavigator) {
+            if (this is MainActivity) {
+                mainComponent.inject(this@MainFragment)
                 viewModel.setNavigator(this)
-            } else {
-                throw RuntimeException("$this must implement FragmentMainNavigator")
-            }
+            } else throw RuntimeException("$this must be MainActivity")
         } ?: throw RuntimeException("Invalid activity")
+
         viewModel.expenses
             .subscribe { expenses -> expenseListAdapter.update(expenses) }
             .addTo(compositeDisposable)
