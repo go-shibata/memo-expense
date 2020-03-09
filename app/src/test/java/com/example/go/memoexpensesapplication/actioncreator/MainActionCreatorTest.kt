@@ -54,6 +54,9 @@ class MainActionCreatorTest {
                 .extracting("data")
                 .isEqualTo(expenses)
         }
+        verify(dispatcher, never()).dispatch(any<MainAction.AddExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.MoveToTagList>())
     }
 
     @Test
@@ -69,12 +72,15 @@ class MainActionCreatorTest {
 
         actionCreator.addExpense(expense)
         verify(database, times(1)).addExpense(eq(expense), any())
+        verify(dispatcher, never()).dispatch(any<MainAction.GetAllExpenses>())
         argumentCaptor<MainAction.AddExpense>().apply {
             verify(dispatcher, times(1)).dispatch(capture())
             assertThat(firstValue)
                 .extracting("data")
                 .isEqualTo(expectedExpense)
         }
+        verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.MoveToTagList>())
     }
 
     @Test
@@ -88,17 +94,23 @@ class MainActionCreatorTest {
 
         actionCreator.deleteExpense(expense)
         verify(database, times(1)).deleteExpenses(eq(expense), any())
+        verify(dispatcher, never()).dispatch(any<MainAction.GetAllExpenses>())
+        verify(dispatcher, never()).dispatch(any<MainAction.AddExpense>())
         argumentCaptor<MainAction.DeleteExpense>().apply {
             verify(dispatcher, times(1)).dispatch(capture())
             assertThat(firstValue)
                 .extracting("data")
                 .isEqualTo(expense)
         }
+        verify(dispatcher, never()).dispatch(any<MainAction.MoveToTagList>())
     }
 
     @Test
     fun moveToTagList_confirmDispatchMoveToTagListAction() {
         actionCreator.moveToTagList()
+        verify(dispatcher, never()).dispatch(any<MainAction.GetAllExpenses>())
+        verify(dispatcher, never()).dispatch(any<MainAction.AddExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
         verify(dispatcher, times(1)).dispatch(any<MainAction.MoveToTagList>())
     }
 }
