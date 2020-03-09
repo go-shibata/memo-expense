@@ -14,7 +14,6 @@ class LoginActionCreator @Inject constructor(
 ) {
 
     fun checkLogin() {
-        mAuth.signOut()
         val currentUser = mAuth.currentUser
         currentUser?.let { user ->
             val mUser = User(user)
