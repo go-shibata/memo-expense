@@ -63,6 +63,16 @@ class FragmentMainViewModelTest {
     }
 
     @Test
+    fun occurredEditExpenseAction_confirmEditExpenseFlowPost() {
+        val expense = Expense("uid1", "tag1", 1, "note1")
+        val subscriber = viewModel.editExpense.test()
+        dispatcher.dispatch(MainAction.EditExpense(expense))
+        subscriber
+            .assertNoErrors()
+            .assertValue(expense)
+    }
+
+    @Test
     fun occurredDeleteExpenseAction_confirmDeleteExpenseFlowPost() {
         val expense = Expense("uid1", "tag1", 1, "note1")
         val subscriber = viewModel.deleteExpense.test()

@@ -62,6 +62,9 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         viewModel.addExpense
             .subscribe { expense -> expenseListAdapter.add(expense) }
             .addTo(compositeDisposable)
+        viewModel.editExpense
+            .subscribe { expense -> expenseListAdapter.edit(expense) }
+            .addTo(compositeDisposable)
         viewModel.deleteExpense
             .subscribe { expense -> expenseListAdapter.delete(expense) }
             .addTo(compositeDisposable)
@@ -115,10 +118,69 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     override fun onClickExpense(v: View, position: Int, item: Expense) {
         val builder = context?.let {
             AlertDialog.Builder(it)
+                .setTitle(
+                    getString(
+                        R.string.fragment_main_click_expense_title,
+                        item.tag,
+                        item.value
+                    )
+                )
+                .setItems(R.array.fragment_main_click_expense_selector) { dialog, pos ->
+                    when (pos) {
+                        SELECT_EDIT -> onClickEditExpense(item)
+                        SELECT_DELETE -> onClickDeleteExpense(item)
+                    }
+                    dialog.dismiss()
+                }
+                .setNegativeButton(R.string.cancel, null)
+        } ?: return
+        MyDialogFragment().setBuilder(builder)
+            .show((activity as AppCompatActivity).supportFragmentManager, null)
+    }
+
+    private fun onClickEditExpense(expense: Expense) {
+        val binding = DialogViewFragmentMainAddBinding
+            .inflate(layoutInflater, view as ViewGroup, false)
+        val tags = pref.getTags().toList()
+        binding.tag.adapter = TagListSpinnerAdapter(requireContext(), tags)
+        binding.tag.setSelection(tags.indexOf(expense.tag))
+        binding.value.setText(expense.value.toString())
+        binding.memo.setText(expense.note)
+
+        val builder = context?.let {
+            AlertDialog.Builder(it)
+                .setTitle(R.string.fragment_main_edit_title)
+                .setView(binding.root)
+                .setPositiveButton(R.string.fragment_main_edit_ok) { _, _ ->
+                    val item = Expense(
+                        expense.id,
+                        expense.type,
+                        expense.uid,
+                        binding.tag.selectedItem as String,
+                        binding.value.text.toString().toInt(10),
+                        binding.memo.text.toString()
+                    )
+                    actionCreator.editExpense(item)
+                }
+                .setNegativeButton(R.string.cancel, null)
+        } ?: return
+        MyDialogFragment().setBuilder(builder)
+            .show((activity as AppCompatActivity).supportFragmentManager, null)
+    }
+
+    private fun onClickDeleteExpense(expense: Expense) {
+        val builder = context?.let {
+            AlertDialog.Builder(it)
                 .setTitle(R.string.fragment_main_remove_title)
-                .setMessage(getString(R.string.fragment_main_remove_message, item.tag, item.value))
+                .setMessage(
+                    getString(
+                        R.string.fragment_main_remove_message,
+                        expense.tag,
+                        expense.value
+                    )
+                )
                 .setPositiveButton(R.string.ok) { _, _ ->
-                    actionCreator.deleteExpense(item)
+                    actionCreator.deleteExpense(expense)
                 }
                 .setNegativeButton(R.string.cancel, null)
         } ?: return
@@ -153,6 +215,9 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
     companion object {
         private const val TAG_USER = "USER"
+
+        private const val SELECT_EDIT = 0
+        private const val SELECT_DELETE = 1
 
         @JvmStatic
         fun newInstance(user: User) = MainFragment().apply {

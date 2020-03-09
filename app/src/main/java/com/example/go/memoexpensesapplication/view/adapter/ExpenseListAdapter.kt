@@ -118,18 +118,25 @@ class ExpenseListAdapter(
         hasFooter = true
     }
 
-    fun update(data: List<Expense>) {
-        this.data = data
+    fun update(expenses: List<Expense>) {
+        data = expenses
         notifyDataSetChanged()
     }
 
     fun add(expense: Expense) {
-        this.data = data + expense
+        data = data + expense
+        notifyDataSetChanged()
+    }
+
+    fun edit(expense: Expense) {
+        val editedItem = data.single { item -> item.id == expense.id }
+        data = data - editedItem
+        data = data + expense
         notifyDataSetChanged()
     }
 
     fun delete(expense: Expense) {
-        this.data = data - expense
+        data = data - expense
         notifyDataSetChanged()
     }
 
