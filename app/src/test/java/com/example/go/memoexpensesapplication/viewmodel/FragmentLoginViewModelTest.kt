@@ -56,11 +56,12 @@ class FragmentLoginViewModelTest {
 
     @Test
     fun occurredAuthenticationFailAction_confirmPostFlow() {
+        val exception = Exception()
         val subscriber = viewModel.authenticationFail.test()
-        dispatcher.dispatch(LoginAction.AuthenticationFail())
+        dispatcher.dispatch(LoginAction.AuthenticationFail(exception))
         subscriber
             .assertNoErrors()
-            .assertValue(Unit)
+            .assertValue(exception)
     }
 
     @Test
