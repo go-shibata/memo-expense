@@ -32,7 +32,7 @@ class LoginActionCreator @Inject constructor(
                     }
                 }
 
-                dispatcher.dispatch(LoginAction.CreateUserFail())
+                dispatcher.dispatch(LoginAction.CreateUserFail(task.exception))
             }
     }
 
@@ -47,7 +47,7 @@ class LoginActionCreator @Inject constructor(
                     }
                 }
 
-                dispatcher.dispatch(LoginAction.AuthenticationFail())
+                dispatcher.dispatch(LoginAction.AuthenticationFail(task.exception))
             }
     }
 }
