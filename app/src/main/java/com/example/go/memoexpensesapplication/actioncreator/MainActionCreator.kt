@@ -5,7 +5,9 @@ import com.example.go.memoexpensesapplication.dispatcher.MainDispatcher
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.network.Database
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class MainActionCreator @Inject constructor(
     private val database: Database,
     private val dispatcher: MainDispatcher

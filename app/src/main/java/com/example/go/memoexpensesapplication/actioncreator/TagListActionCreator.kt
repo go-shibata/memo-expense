@@ -4,7 +4,9 @@ import com.example.go.memoexpensesapplication.Preferences
 import com.example.go.memoexpensesapplication.action.TagListAction
 import com.example.go.memoexpensesapplication.dispatcher.TagListDispatcher
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class TagListActionCreator @Inject constructor(
     private val pref: Preferences,
     private val dispatcher: TagListDispatcher

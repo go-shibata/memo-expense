@@ -5,8 +5,7 @@ import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.databinding.ActivityMainBinding
-import com.example.go.memoexpensesapplication.di.component.DaggerLoginComponent
-import com.example.go.memoexpensesapplication.di.component.LoginComponent
+import com.example.go.memoexpensesapplication.di.component.*
 import com.example.go.memoexpensesapplication.fragment.LoginFragment
 import com.example.go.memoexpensesapplication.fragment.MainFragment
 import com.example.go.memoexpensesapplication.fragment.SplashFragment
@@ -22,6 +21,8 @@ class MainActivity :
 
     lateinit var binding: ActivityMainBinding
     lateinit var loginComponent: LoginComponent
+    lateinit var mainComponent: MainComponent
+    lateinit var tagListComponent: TagListComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +30,8 @@ class MainActivity :
 
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         loginComponent = DaggerLoginComponent.create()
+        mainComponent = DaggerMainComponent.create()
+        tagListComponent = DaggerTagListComponent.create()
 
         supportFragmentManager.beginTransaction()
             .replace(binding.container.id, SplashFragment.newInstance())

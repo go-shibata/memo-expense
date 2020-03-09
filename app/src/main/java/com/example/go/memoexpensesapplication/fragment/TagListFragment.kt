@@ -13,10 +13,10 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.TagListActionCreator
+import com.example.go.memoexpensesapplication.activity.MainActivity
 import com.example.go.memoexpensesapplication.databinding.DialogAddTagBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentTagListBinding
 import com.example.go.memoexpensesapplication.di.ViewModelFactory
-import com.example.go.memoexpensesapplication.di.component.DaggerTagListComponent
 import com.example.go.memoexpensesapplication.view.adapter.TagListAdapter
 import com.example.go.memoexpensesapplication.viewmodel.FragmentTagListViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -39,7 +39,11 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        DaggerTagListComponent.create().inject(this)
+        activity?.run {
+            if (this is MainActivity) {
+                tagListComponent.inject(this@TagListFragment)
+            } else throw RuntimeException("$this must be MainActivity")
+        } ?: throw RuntimeException("Invalid Activity")
 
         viewModel.tags
             .subscribe { tags -> tagListAdapter.update(tags) }
