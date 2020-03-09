@@ -55,16 +55,27 @@ class FragmentLoginViewModelTest {
     }
 
     @Test
-    fun occurredAuthenticationFailAction_confirmPostFlow() {
-        val subscriber = viewModel.authenticationFail.test()
-        dispatcher.dispatch(LoginAction.AuthenticationFail())
+    fun occurredCreateUserFailAction_confirmPostFlow() {
+        val exception = Exception()
+        val subscriber = viewModel.createUserFail.test()
+        dispatcher.dispatch(LoginAction.CreateUserFail(exception))
         subscriber
             .assertNoErrors()
-            .assertValue(Unit)
+            .assertValue(exception)
     }
 
     @Test
-    fun occurredAutoLoginFaailedAction_confirmNavigatorCalled() {
+    fun occurredAuthenticationFailAction_confirmPostFlow() {
+        val exception = Exception()
+        val subscriber = viewModel.authenticationFail.test()
+        dispatcher.dispatch(LoginAction.AuthenticationFail(exception))
+        subscriber
+            .assertNoErrors()
+            .assertValue(exception)
+    }
+
+    @Test
+    fun occurredAutoLoginFailedAction_confirmNavigatorCalled() {
         viewModel.setNavigator(navigator)
 
         dispatcher.dispatch(LoginAction.AutoLoginFail())

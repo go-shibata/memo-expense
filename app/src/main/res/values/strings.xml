@@ -15,6 +15,10 @@
     <string name="fragment_login_create_user">ユーザー作成</string>
     <string name="fragment_login_login">ログイン</string>
     <string name="fragment_login_create_user_failed">ユーザー作成に失敗しました</string>
+    <string name="fragment_login_mail_address_is_already_used">このメールアドレスはすでに使われています</string>
+    <string name="fragment_login_password_invalid">パスワードが正しくありません</string>
+    <string name="fragment_login_mail_address_invalid">メールアドレスが正しくありません</string>
+    <string name="fragment_login_cannot_find_user">このメールアドレスは登録されていません</string>
     <string name="fragment_login_authentication_failed">認証に失敗しました</string>
 
     <string name="fragment_main_add_title">出費メモの追加</string>

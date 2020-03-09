@@ -20,10 +20,10 @@ class FragmentLoginViewModel @Inject constructor(
     val password: MutableLiveData<String> = MutableLiveData()
 
     private val login: Disposable
-    private val _authenticationFail = PublishProcessor.create<Unit>()
-    val authenticationFail: Flowable<Unit> = _authenticationFail
-    private val _createUserFail = PublishProcessor.create<Unit>()
-    val createUserFail: Flowable<Unit> = _createUserFail
+    private val _authenticationFail = PublishProcessor.create<Exception?>()
+    val authenticationFail: Flowable<Exception?> = _authenticationFail
+    private val _createUserFail = PublishProcessor.create<Exception?>()
+    val createUserFail: Flowable<Exception?> = _createUserFail
     private val autoLoginFail: Disposable
 
     init {
