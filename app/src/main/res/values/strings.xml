@@ -38,6 +38,7 @@
     <string name="fragment_main_header_value">金額</string>
     <string name="fragment_main_header_note">メモ</string>
     <string name="fragment_main_footer">以上</string>
+    <string name="fragment_main_menu_delete">メモの削除</string>
     <string name="fragment_main_menu_tag_edit">タグの編集</string>
 
     <string name="fragment_tag_list_title">タグ一覧</string>
