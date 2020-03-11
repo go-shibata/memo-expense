@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="3"
-                android:text="@{expense.value.toString()}" />
+                android:text="@{Integer.toString(expense.value)}" />
 
         <TextView
                 android:layout_width="0dp"

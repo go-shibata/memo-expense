@@ -9,14 +9,32 @@ import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainBodyBinding
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainSectionBinding
 import com.example.go.memoexpensesapplication.model.Expense
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ExpenseListAdapter(
-    private var data: List<Expense>,
+    data: List<Expense>,
     private val onClickExpenseListener: OnClickExpenseListener
 ) : RecyclerView.Adapter<ExpenseListAdapter.ViewHolder>() {
 
+    private var groupedData: SortedMap<String, ArrayList<Expense>> = sortedMapOf()
+    private var groupedItemCount: SortedMap<String, Int> = sortedMapOf()
     private var hasHeader = false
     private var hasFooter = false
+
+    init {
+        setData(data)
+    }
+
+    private fun setData(data: List<Expense>) {
+        groupedData = data.groupBy { it.tag }
+            .mapValues {
+                it.value.toCollection(ArrayList())
+            }.toSortedMap()
+        groupedItemCount = groupedData
+            .mapValues { it.value.count() + 1 }
+            .toSortedMap()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -53,21 +71,23 @@ class ExpenseListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data = getDataWithSection()
-        // データ表示
+        val (sectionKey, localPosition) = getLocalPosition(position)
         when (holder) {
             is BodyViewHolder -> {
-                val dataPos = if (hasHeader) position - 1 else position
+                val data = groupedData[sectionKey]?.get(localPosition)
+                    ?: throw RuntimeException("Invalid data")
                 holder.apply {
-                    binding.expense = data[dataPos]
+                    binding.expense = data
                     itemView.setOnClickListener {
-                        onClickExpenseListener.onClickExpense(it, dataPos, data[dataPos])
+                        onClickExpenseListener.onClickExpense(data)
                     }
                 }
             }
             is SectionViewHolder -> {
-                val dataPos = if (hasHeader) position - 1 else position
-                holder.binding.expense = data[dataPos]
+                val header = groupedData[sectionKey]?.let { list ->
+                    Header(sectionKey, list.sumBy { it.value })
+                } ?: throw RuntimeException("Invalid data")
+                holder.binding.header = header
             }
             is HeaderViewHolder -> {
             }
@@ -77,37 +97,34 @@ class ExpenseListAdapter(
     }
 
     override fun getItemCount(): Int {
-        val data = getDataWithSection()
-        var count = data.size
+        var count = groupedItemCount.values.sum()
         count += if (hasHeader) 1 else 0
         count += if (hasFooter) 1 else 0
         return count
     }
 
     override fun getItemViewType(position: Int): Int {
-        val data = getDataWithSection()
-        return if (hasHeader) {
-            when {
-                position == 0 -> {
-                    ExpenseViewType.HEADER.type
-                }
-                hasFooter && position == itemCount - 1 -> {
-                    ExpenseViewType.FOOTER.type
-                }
-                else -> {
-                    data[position - 1].type.type
-                }
+        val (sectionKey, localPosition) = getLocalPosition(position)
+        if (sectionKey == HEADER) return ExpenseViewType.HEADER.type
+        if (sectionKey == FOOTER) return ExpenseViewType.FOOTER.type
+        if (localPosition == SECTION) return ExpenseViewType.SECTION.type
+        return ExpenseViewType.BODY.type
+    }
+
+    private fun getLocalPosition(position: Int): Pair<String, Int> {
+        if (hasHeader && position == 0) return HEADER to -1
+        if (hasFooter && position == itemCount - 1) return FOOTER to -1
+
+        var relativePosition = if (hasHeader) position - 1 else position
+        groupedItemCount.forEach { (key, count) ->
+            if (relativePosition < count) {
+                val localPosition = if (relativePosition == 0) SECTION else relativePosition - 1
+                return key to localPosition
             }
-        } else {
-            when {
-                hasFooter && position == itemCount - 1 -> {
-                    ExpenseViewType.FOOTER.type
-                }
-                else -> {
-                    data[position].type.type
-                }
-            }
+            relativePosition -= count
         }
+
+        throw RuntimeException("invalid position")
     }
 
     fun setHeader() {
@@ -119,38 +136,41 @@ class ExpenseListAdapter(
     }
 
     fun update(expenses: List<Expense>) {
-        data = expenses
+        setData(expenses)
         notifyDataSetChanged()
     }
 
     fun add(expense: Expense) {
-        data = data + expense
+        if (groupedData.contains(expense.tag)) {
+            groupedData[expense.tag]!!.add(expense)
+            groupedItemCount[expense.tag] = groupedItemCount[expense.tag]!! + 1
+        } else {
+            groupedData[expense.tag] = arrayListOf(expense)
+            groupedItemCount[expense.tag] = 2
+        }
         notifyDataSetChanged()
     }
 
     fun edit(expense: Expense) {
-        val editedItem = data.single { item -> item.id == expense.id }
-        data = data - editedItem
-        data = data + expense
+        if (groupedData.contains(expense.tag)) {
+            groupedData[expense.tag]!!.apply {
+                remove(single { it.id == expense.id })
+                add(expense)
+            }
+        } else throw RuntimeException("No data with key ${expense.tag}")
         notifyDataSetChanged()
     }
 
     fun delete(expense: Expense) {
-        data = data - expense
+        if (groupedData.contains(expense.tag)) {
+            groupedData[expense.tag]!!.remove(expense)
+            groupedItemCount[expense.tag] = groupedItemCount[expense.tag]!! - 1
+            if (groupedData[expense.tag]!!.isEmpty()) {
+                groupedData.remove(expense.tag)
+                groupedItemCount.remove(expense.tag)
+            }
+        } else throw RuntimeException("No data with key ${expense.tag}")
         notifyDataSetChanged()
-    }
-
-    private fun getDataWithSection(): ArrayList<Expense> {
-        val sortedData = ArrayList(data.sortedBy { it.tag })
-        val tagList = data.map { it.tag }.distinct()
-        for (tag in tagList) {
-            val sum = data.filter { it.tag == tag }.sumBy { it.value ?: 0 }
-            sortedData.add(
-                sortedData.indexOfFirst { it.tag == tag },
-                Expense(null, ExpenseViewType.SECTION, null, tag, sum, null)
-            )
-        }
-        return sortedData
     }
 
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -165,6 +185,17 @@ class ExpenseListAdapter(
         ViewHolder(binding.root)
 
     interface OnClickExpenseListener {
-        fun onClickExpense(v: View, position: Int, item: Expense)
+        fun onClickExpense(expense: Expense)
+    }
+
+    data class Header(
+        val tag: String,
+        val value: Int
+    )
+
+    companion object {
+        private const val HEADER = "HEADER"
+        private const val FOOTER = "FOOTER"
+        private const val SECTION = -1
     }
 }

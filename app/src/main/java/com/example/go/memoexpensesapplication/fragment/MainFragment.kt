@@ -115,7 +115,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onClickExpense(v: View, position: Int, item: Expense) {
+    override fun onClickExpense(item: Expense) {
         val builder = context?.let {
             AlertDialog.Builder(it)
                 .setTitle(
@@ -154,7 +154,6 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
                 .setPositiveButton(R.string.fragment_main_edit_ok) { _, _ ->
                     val item = Expense(
                         expense.id,
-                        expense.type,
                         expense.uid,
                         binding.tag.selectedItem as String,
                         binding.value.text.toString().toInt(10),

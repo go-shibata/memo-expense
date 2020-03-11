@@ -1,7 +1,6 @@
 package com.example.go.memoexpensesapplication.network
 
 import android.util.Log
-import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.model.Expense
 import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
@@ -57,11 +56,10 @@ class Database @Inject constructor() {
                 val data = it.documents.map { item ->
                     Expense(
                         item.id,
-                        ExpenseViewType.BODY,
-                        item.get("uid") as String?,
-                        item.get("tag") as String?,
-                        (item.get("value") as Long?)?.toInt(),
-                        item.get("note") as String?
+                        item.get("uid") as String,
+                        item.get("tag") as String,
+                        (item.get("value") as Long).toInt(),
+                        item.get("note") as String
                     )
                 }
                 Log.d(LOG_TAG, "Get documents, size = ${it.size()}")
