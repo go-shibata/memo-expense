@@ -110,7 +110,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_fragment_main_edit_tag -> actionCreator.moveToTagList()
+            R.id.edit_tag -> actionCreator.moveToTagList()
         }
         return super.onOptionsItemSelected(item)
     }
