@@ -115,20 +115,20 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onClickExpense(v: View, position: Int, item: Expense) {
+    override fun onClickExpense(expense: Expense) {
         val builder = context?.let {
             AlertDialog.Builder(it)
                 .setTitle(
                     getString(
                         R.string.fragment_main_click_expense_title,
-                        item.tag,
-                        item.value
+                        expense.tag,
+                        expense.value
                     )
                 )
                 .setItems(R.array.fragment_main_click_expense_selector) { dialog, pos ->
                     when (pos) {
-                        SELECT_EDIT -> onClickEditExpense(item)
-                        SELECT_DELETE -> onClickDeleteExpense(item)
+                        SELECT_EDIT -> onClickEditExpense(expense)
+                        SELECT_DELETE -> onClickDeleteExpense(expense)
                     }
                     dialog.dismiss()
                 }
@@ -154,7 +154,6 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
                 .setPositiveButton(R.string.fragment_main_edit_ok) { _, _ ->
                     val item = Expense(
                         expense.id,
-                        expense.type,
                         expense.uid,
                         binding.tag.selectedItem as String,
                         binding.value.text.toString().toInt(10),
