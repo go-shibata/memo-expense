@@ -1,13 +1,13 @@
 package com.example.go.memoexpensesapplication.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.go.memoexpensesapplication.dispatcher.MainDispatcher
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator
-import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.processors.PublishProcessor
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
 class FragmentMainViewModel @Inject constructor(
@@ -16,34 +16,41 @@ class FragmentMainViewModel @Inject constructor(
 
     private var navigator: FragmentMainNavigator? = null
 
-    private val _expenses = PublishProcessor.create<List<Expense>>()
-    val expenses: Flowable<List<Expense>> = _expenses
-    private val _addExpense = PublishProcessor.create<Expense>()
-    val addExpense: Flowable<Expense> = _addExpense
-    private val _editExpense = PublishProcessor.create<Expense>()
-    val editExpense: Flowable<Expense> = _editExpense
-    private val _deleteExpense = PublishProcessor.create<Expense>()
-    val deleteExpense: Flowable<Expense> = _deleteExpense
-    private val moveToTagList: Disposable
+    val isCheckable: MutableLiveData<Boolean> = MutableLiveData(false)
+    val expenses: MutableLiveData<List<Expense>> = MutableLiveData(emptyList())
+
+    private val compositeDisposable = CompositeDisposable()
 
     init {
         dispatcher.onGetAllExpenses
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(_expenses)
+            .subscribe { expenses.postValue(it) }
+            .addTo(compositeDisposable)
         dispatcher.onAddExpense
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(_addExpense)
+            .subscribe {
+                val list = (expenses.value ?: emptyList()) + it
+                expenses.postValue(list)
+            }.addTo(compositeDisposable)
         dispatcher.onEditExpense
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(_editExpense)
+            .subscribe { expense ->
+                var list = expenses.value ?: emptyList()
+                list = list - list.single { it.id == expense.id }
+                list = list + expense
+                expenses.postValue(list)
+            }.addTo(compositeDisposable)
         dispatcher.onDeleteExpense
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(_deleteExpense)
-        moveToTagList = dispatcher.onMoveToTagList
+            .subscribe {
+                val list = (expenses.value ?: emptyList()) - it
+                expenses.postValue(list)
+            }.addTo(compositeDisposable)
+        dispatcher.onMoveToTagList
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -52,7 +59,12 @@ class FragmentMainViewModel @Inject constructor(
                         ?: throw RuntimeException("Navigator must be set")
                 },
                 { throw it }
-            )
+            ).addTo(compositeDisposable)
+        dispatcher.onToggleCheckable
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                isCheckable.postValue(isCheckable.value?.not())
+            }.addTo(compositeDisposable)
     }
 
     fun setNavigator(navigator: FragmentMainNavigator) {
@@ -60,7 +72,7 @@ class FragmentMainViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        moveToTagList.dispose()
+        compositeDisposable.dispose()
         super.onCleared()
     }
 }

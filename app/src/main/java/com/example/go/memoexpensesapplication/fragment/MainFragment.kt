@@ -2,6 +2,7 @@ package com.example.go.memoexpensesapplication.fragment
 
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -19,8 +20,6 @@ import com.example.go.memoexpensesapplication.model.User
 import com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter
 import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
 class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
@@ -33,11 +32,57 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     @Inject
     lateinit var factory: ViewModelFactory<FragmentMainViewModel>
 
-    private lateinit var expenseListAdapter: ExpenseListAdapter
-
     private val viewModel: FragmentMainViewModel by activityViewModels { factory }
     private lateinit var binding: FragmentMainBinding
-    private val compositeDisposable = CompositeDisposable()
+    private lateinit var expenseListAdapter: ExpenseListAdapter
+    private var actionMode: ActionMode? = null
+    private val actionModeCallback = object : ActionMode.Callback {
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.delete -> {
+                    val checkedExpenses = expenseListAdapter.getCheckedExpenses()
+                    if (checkedExpenses.isEmpty()) {
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.fragment_main_menu_delete_checked_list_empty,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return false
+                    }
+                    val builder = context?.let { context ->
+                        AlertDialog.Builder(context)
+                            .setTitle(R.string.fragment_main_remove_title)
+                            .setMessage(R.string.fragment_main_menu_delete_dialog_message)
+                            .setPositiveButton(R.string.ok) { _, _ ->
+                                checkedExpenses.forEach { actionCreator.deleteExpense(it) }
+                                mode.finish()
+                            }
+                            .setNegativeButton(R.string.cancel, null)
+                    } ?: return false
+                    MyDialogFragment().setBuilder(builder)
+                        .show((activity as AppCompatActivity).supportFragmentManager, null)
+                    true
+                }
+                else -> false
+            }
+        }
+
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            val inflater = mode.menuInflater
+            inflater.inflate(R.menu.fragment_main_action_mode, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            mode.title = getString(R.string.fragment_main_menu_delete)
+            return true
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode) {
+            actionCreator.toggleCheckable()
+            actionMode = null
+        }
+    }
 
     private lateinit var user: User
 
@@ -56,19 +101,6 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
             } else throw RuntimeException("$this must be MainActivity")
         } ?: throw RuntimeException("Invalid activity")
 
-        viewModel.expenses
-            .subscribe { expenses -> expenseListAdapter.update(expenses) }
-            .addTo(compositeDisposable)
-        viewModel.addExpense
-            .subscribe { expense -> expenseListAdapter.add(expense) }
-            .addTo(compositeDisposable)
-        viewModel.editExpense
-            .subscribe { expense -> expenseListAdapter.edit(expense) }
-            .addTo(compositeDisposable)
-        viewModel.deleteExpense
-            .subscribe { expense -> expenseListAdapter.delete(expense) }
-            .addTo(compositeDisposable)
-
         setHasOptionsMenu(true)
     }
 
@@ -79,6 +111,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         binding = FragmentMainBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.fragment = this
+        binding.viewModel = viewModel
         return binding.root
     }
 
@@ -90,7 +123,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         }
 
         expenseListAdapter =
-            ExpenseListAdapter(emptyList(), this@MainFragment).apply {
+            ExpenseListAdapter(this, viewModel, this).apply {
                 setHeader()
                 setFooter()
             }
@@ -105,12 +138,16 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_fragment_main, menu)
+        inflater.inflate(R.menu.fragment_main, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_fragment_main_edit_tag -> actionCreator.moveToTagList()
+            R.id.delete -> {
+                actionMode = activity?.startActionMode(actionModeCallback)
+                actionCreator.toggleCheckable()
+            }
+            R.id.edit_tag -> actionCreator.moveToTagList()
         }
         return super.onOptionsItemSelected(item)
     }

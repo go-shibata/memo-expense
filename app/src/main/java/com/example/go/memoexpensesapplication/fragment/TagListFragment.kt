@@ -30,11 +30,10 @@ class TagListFragment : Fragment(), TagListAdapter.OnClickListener {
     @Inject
     lateinit var factory: ViewModelFactory<FragmentTagListViewModel>
 
-    private lateinit var tagListAdapter: TagListAdapter
-
     private val viewModel: FragmentTagListViewModel by activityViewModels { factory }
     private lateinit var binding: FragmentTagListBinding
     private val compositeDisposable = CompositeDisposable()
+    private lateinit var tagListAdapter: TagListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

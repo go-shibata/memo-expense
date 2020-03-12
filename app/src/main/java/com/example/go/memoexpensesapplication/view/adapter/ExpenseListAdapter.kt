@@ -3,37 +3,56 @@ package com.example.go.memoexpensesapplication.view.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainBodyBinding
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainSectionBinding
+import com.example.go.memoexpensesapplication.fragment.MainFragment
 import com.example.go.memoexpensesapplication.model.Expense
+import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
+import kotlinx.android.synthetic.main.list_item_fragment_main_body.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 class ExpenseListAdapter(
-    data: List<Expense>,
+    fragment: MainFragment,
+    private val viewModel: FragmentMainViewModel,
     private val onClickExpenseListener: OnClickExpenseListener
 ) : RecyclerView.Adapter<ExpenseListAdapter.ViewHolder>() {
 
-    private var groupedData: SortedMap<String, ArrayList<Expense>> = sortedMapOf()
+    private var groupedData: SortedMap<String, ArrayList<CheckableExpense>> = sortedMapOf()
     private var groupedItemCount: SortedMap<String, Int> = sortedMapOf()
     private var hasHeader = false
     private var hasFooter = false
 
     init {
-        setData(data)
+        viewModel.expenses
+            .observe(fragment, Observer { setData(it) })
+        viewModel.isCheckable
+            .observe(fragment, Observer { isCheckable ->
+                if (!isCheckable) {
+                    groupedData.values
+                        .forEach { checkableExpenses ->
+                            checkableExpenses.forEach { it.isChecked = false }
+                        }
+                }
+                notifyDataSetChanged()
+            })
     }
 
     private fun setData(data: List<Expense>) {
         groupedData = data.groupBy { it.tag }
             .mapValues {
-                it.value.toCollection(ArrayList())
+                it.value
+                    .map { expense -> CheckableExpense(expense) }
+                    .toCollection(ArrayList())
             }.toSortedMap()
         groupedItemCount = groupedData
             .mapValues { it.value.count() + 1 }
             .toSortedMap()
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -77,15 +96,20 @@ class ExpenseListAdapter(
                 val data = groupedData[sectionKey]?.get(localPosition)
                     ?: throw RuntimeException("Invalid data")
                 holder.apply {
-                    binding.expense = data
+                    binding.isCheckable = viewModel.isCheckable.value
+                    binding.checkableExpense = data
                     itemView.setOnClickListener {
-                        onClickExpenseListener.onClickExpense(data)
+                        if (viewModel.isCheckable.value == true) {
+                            binding.root.checkbox.isChecked = !binding.root.checkbox.isChecked
+                        } else {
+                            onClickExpenseListener.onClickExpense(data.expense)
+                        }
                     }
                 }
             }
             is SectionViewHolder -> {
                 val header = groupedData[sectionKey]?.let { list ->
-                    Header(sectionKey, list.sumBy { it.value })
+                    Header(sectionKey, list.sumBy { it.expense.value })
                 } ?: throw RuntimeException("Invalid data")
                 holder.binding.header = header
             }
@@ -135,42 +159,13 @@ class ExpenseListAdapter(
         hasFooter = true
     }
 
-    fun update(expenses: List<Expense>) {
-        setData(expenses)
-        notifyDataSetChanged()
-    }
-
-    fun add(expense: Expense) {
-        if (groupedData.contains(expense.tag)) {
-            groupedData[expense.tag]!!.add(expense)
-            groupedItemCount[expense.tag] = groupedItemCount[expense.tag]!! + 1
-        } else {
-            groupedData[expense.tag] = arrayListOf(expense)
-            groupedItemCount[expense.tag] = 2
-        }
-        notifyDataSetChanged()
-    }
-
-    fun edit(expense: Expense) {
-        if (groupedData.contains(expense.tag)) {
-            groupedData[expense.tag]!!.apply {
-                remove(single { it.id == expense.id })
-                add(expense)
+    fun getCheckedExpenses(): List<Expense> {
+        return groupedData.values
+            .map { checkableExpenses ->
+                checkableExpenses.filter { it.isChecked }
+                    .map { it.expense }
             }
-        } else throw RuntimeException("No data with key ${expense.tag}")
-        notifyDataSetChanged()
-    }
-
-    fun delete(expense: Expense) {
-        if (groupedData.contains(expense.tag)) {
-            groupedData[expense.tag]!!.remove(expense)
-            groupedItemCount[expense.tag] = groupedItemCount[expense.tag]!! - 1
-            if (groupedData[expense.tag]!!.isEmpty()) {
-                groupedData.remove(expense.tag)
-                groupedItemCount.remove(expense.tag)
-            }
-        } else throw RuntimeException("No data with key ${expense.tag}")
-        notifyDataSetChanged()
+            .fold(listOf()) { acc, list -> acc + list }
     }
 
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -187,6 +182,11 @@ class ExpenseListAdapter(
     interface OnClickExpenseListener {
         fun onClickExpense(expense: Expense)
     }
+
+    data class CheckableExpense(
+        val expense: Expense,
+        var isChecked: Boolean = false
+    )
 
     data class Header(
         val tag: String,

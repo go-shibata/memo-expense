@@ -58,6 +58,7 @@ class MainActionCreatorTest {
         verify(dispatcher, never()).dispatch(any<MainAction.EditExpense>())
         verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
         verify(dispatcher, never()).dispatch(any<MainAction.MoveToTagList>())
+        verify(dispatcher, never()).dispatch(any<MainAction.ToggleCheckable>())
     }
 
     @Test
@@ -83,6 +84,7 @@ class MainActionCreatorTest {
         verify(dispatcher, never()).dispatch(any<MainAction.EditExpense>())
         verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
         verify(dispatcher, never()).dispatch(any<MainAction.MoveToTagList>())
+        verify(dispatcher, never()).dispatch(any<MainAction.ToggleCheckable>())
     }
 
     @Test
@@ -106,6 +108,7 @@ class MainActionCreatorTest {
         }
         verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
         verify(dispatcher, never()).dispatch(any<MainAction.MoveToTagList>())
+        verify(dispatcher, never()).dispatch(any<MainAction.ToggleCheckable>())
     }
 
     @Test
@@ -129,6 +132,7 @@ class MainActionCreatorTest {
                 .isEqualTo(expense)
         }
         verify(dispatcher, never()).dispatch(any<MainAction.MoveToTagList>())
+        verify(dispatcher, never()).dispatch(any<MainAction.ToggleCheckable>())
     }
 
     @Test
@@ -139,5 +143,17 @@ class MainActionCreatorTest {
         verify(dispatcher, never()).dispatch(any<MainAction.EditExpense>())
         verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
         verify(dispatcher, times(1)).dispatch(any<MainAction.MoveToTagList>())
+        verify(dispatcher, never()).dispatch(any<MainAction.ToggleCheckable>())
+    }
+
+    @Test
+    fun toggleCheckable_confirmDispatchToggleCheckable() {
+        actionCreator.toggleCheckable()
+        verify(dispatcher, never()).dispatch(any<MainAction.GetAllExpenses>())
+        verify(dispatcher, never()).dispatch(any<MainAction.AddExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.EditExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.DeleteExpense>())
+        verify(dispatcher, never()).dispatch(any<MainAction.MoveToTagList>())
+        verify(dispatcher, times(1)).dispatch(any<MainAction.ToggleCheckable>())
     }
 }

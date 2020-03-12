@@ -41,4 +41,8 @@ class MainActionCreator @Inject constructor(
     fun moveToTagList() {
         dispatcher.dispatch(MainAction.MoveToTagList())
     }
+
+    fun toggleCheckable() {
+        dispatcher.dispatch(MainAction.ToggleCheckable())
+    }
 }
