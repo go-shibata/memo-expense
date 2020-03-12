@@ -37,7 +37,6 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
     private val viewModel: FragmentMainViewModel by activityViewModels { factory }
     private lateinit var binding: FragmentMainBinding
-    private val compositeDisposable = CompositeDisposable()
 
     private lateinit var user: User
 
@@ -55,19 +54,6 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
                 viewModel.setNavigator(this)
             } else throw RuntimeException("$this must be MainActivity")
         } ?: throw RuntimeException("Invalid activity")
-
-        viewModel.expenses
-            .subscribe { expenses -> expenseListAdapter.update(expenses) }
-            .addTo(compositeDisposable)
-        viewModel.addExpense
-            .subscribe { expense -> expenseListAdapter.add(expense) }
-            .addTo(compositeDisposable)
-        viewModel.editExpense
-            .subscribe { expense -> expenseListAdapter.edit(expense) }
-            .addTo(compositeDisposable)
-        viewModel.deleteExpense
-            .subscribe { expense -> expenseListAdapter.delete(expense) }
-            .addTo(compositeDisposable)
 
         setHasOptionsMenu(true)
     }
@@ -90,7 +76,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         }
 
         expenseListAdapter =
-            ExpenseListAdapter(emptyList(), this@MainFragment).apply {
+            ExpenseListAdapter(viewModel, this@MainFragment).apply {
                 setHeader()
                 setFooter()
             }

@@ -9,11 +9,14 @@ import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainBodyBinding
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainSectionBinding
 import com.example.go.memoexpensesapplication.model.Expense
+import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import java.util.*
 import kotlin.collections.ArrayList
 
 class ExpenseListAdapter(
-    data: List<Expense>,
+    private val viewModel: FragmentMainViewModel,
     private val onClickExpenseListener: OnClickExpenseListener
 ) : RecyclerView.Adapter<ExpenseListAdapter.ViewHolder>() {
 
@@ -22,8 +25,12 @@ class ExpenseListAdapter(
     private var hasHeader = false
     private var hasFooter = false
 
+    private val compositeDisposable = CompositeDisposable()
+
     init {
-        setData(data)
+        viewModel.updateExpenses
+            .subscribe { expenses -> setData(expenses) }
+            .addTo(compositeDisposable)
     }
 
     private fun setData(data: List<Expense>) {
@@ -34,6 +41,7 @@ class ExpenseListAdapter(
         groupedItemCount = groupedData
             .mapValues { it.value.count() + 1 }
             .toSortedMap()
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -133,44 +141,6 @@ class ExpenseListAdapter(
 
     fun setFooter() {
         hasFooter = true
-    }
-
-    fun update(expenses: List<Expense>) {
-        setData(expenses)
-        notifyDataSetChanged()
-    }
-
-    fun add(expense: Expense) {
-        if (groupedData.contains(expense.tag)) {
-            groupedData[expense.tag]!!.add(expense)
-            groupedItemCount[expense.tag] = groupedItemCount[expense.tag]!! + 1
-        } else {
-            groupedData[expense.tag] = arrayListOf(expense)
-            groupedItemCount[expense.tag] = 2
-        }
-        notifyDataSetChanged()
-    }
-
-    fun edit(expense: Expense) {
-        if (groupedData.contains(expense.tag)) {
-            groupedData[expense.tag]!!.apply {
-                remove(single { it.id == expense.id })
-                add(expense)
-            }
-        } else throw RuntimeException("No data with key ${expense.tag}")
-        notifyDataSetChanged()
-    }
-
-    fun delete(expense: Expense) {
-        if (groupedData.contains(expense.tag)) {
-            groupedData[expense.tag]!!.remove(expense)
-            groupedItemCount[expense.tag] = groupedItemCount[expense.tag]!! - 1
-            if (groupedData[expense.tag]!!.isEmpty()) {
-                groupedData.remove(expense.tag)
-                groupedItemCount.remove(expense.tag)
-            }
-        } else throw RuntimeException("No data with key ${expense.tag}")
-        notifyDataSetChanged()
     }
 
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

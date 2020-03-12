@@ -16,33 +16,33 @@ class FragmentMainViewModel @Inject constructor(
 
     private var navigator: FragmentMainNavigator? = null
 
-    private val _expenses = PublishProcessor.create<List<Expense>>()
-    val expenses: Flowable<List<Expense>> = _expenses
-    private val _addExpense = PublishProcessor.create<Expense>()
-    val addExpense: Flowable<Expense> = _addExpense
-    private val _editExpense = PublishProcessor.create<Expense>()
-    val editExpense: Flowable<Expense> = _editExpense
-    private val _deleteExpense = PublishProcessor.create<Expense>()
-    val deleteExpense: Flowable<Expense> = _deleteExpense
+    private var expenses: List<Expense> = emptyList()
+
+    private val _updateExpenses = PublishProcessor.create<List<Expense>>()
+    val updateExpenses: Flowable<List<Expense>> = _updateExpenses
     private val moveToTagList: Disposable
 
     init {
         dispatcher.onGetAllExpenses
-            .map { action -> action.data }
+            .map { action -> expenses = action.data; expenses }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(_expenses)
+            .subscribe(_updateExpenses)
         dispatcher.onAddExpense
-            .map { action -> action.data }
+            .map { action -> expenses = expenses + action.data; expenses }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(_addExpense)
+            .subscribe(_updateExpenses)
         dispatcher.onEditExpense
-            .map { action -> action.data }
+            .map { action ->
+                expenses = expenses - expenses.single { it.id == action.data.id }
+                expenses = expenses + action.data
+                expenses
+            }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(_editExpense)
+            .subscribe(_updateExpenses)
         dispatcher.onDeleteExpense
-            .map { action -> action.data }
+            .map { action -> expenses = expenses - action.data; expenses }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(_deleteExpense)
+            .subscribe(_updateExpenses)
         moveToTagList = dispatcher.onMoveToTagList
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
