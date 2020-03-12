@@ -2,6 +2,7 @@ package com.example.go.memoexpensesapplication.fragment
 
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -34,6 +35,54 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     private val viewModel: FragmentMainViewModel by activityViewModels { factory }
     private lateinit var binding: FragmentMainBinding
     private lateinit var expenseListAdapter: ExpenseListAdapter
+    private var actionMode: ActionMode? = null
+    private val actionModeCallback = object : ActionMode.Callback {
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.delete -> {
+                    val checkedExpenses = expenseListAdapter.getCheckedExpenses()
+                    if (checkedExpenses.isEmpty()) {
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.fragment_main_menu_delete_checked_list_empty,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return false
+                    }
+                    val builder = context?.let { context ->
+                        AlertDialog.Builder(context)
+                            .setTitle(R.string.fragment_main_remove_title)
+                            .setMessage(R.string.fragment_main_menu_delete_dialog_message)
+                            .setPositiveButton(R.string.ok) { _, _ ->
+                                checkedExpenses.forEach { actionCreator.deleteExpense(it) }
+                                mode.finish()
+                            }
+                            .setNegativeButton(R.string.cancel, null)
+                    } ?: return false
+                    MyDialogFragment().setBuilder(builder)
+                        .show((activity as AppCompatActivity).supportFragmentManager, null)
+                    true
+                }
+                else -> false
+            }
+        }
+
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            val inflater = mode.menuInflater
+            inflater.inflate(R.menu.fragment_main_action_mode, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            mode.title = getString(R.string.fragment_main_menu_delete)
+            return true
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode) {
+            actionCreator.toggleCheckable()
+            actionMode = null
+        }
+    }
 
     private lateinit var user: User
 
@@ -94,7 +143,10 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.delete -> actionCreator.toggleCheckable()
+            R.id.delete -> {
+                actionMode = activity?.startActionMode(actionModeCallback)
+                actionCreator.toggleCheckable()
+            }
             R.id.edit_tag -> actionCreator.moveToTagList()
         }
         return super.onOptionsItemSelected(item)

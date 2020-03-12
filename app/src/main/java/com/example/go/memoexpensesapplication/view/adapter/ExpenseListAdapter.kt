@@ -159,6 +159,15 @@ class ExpenseListAdapter(
         hasFooter = true
     }
 
+    fun getCheckedExpenses(): List<Expense> {
+        return groupedData.values
+            .map { checkableExpenses ->
+                checkableExpenses.filter { it.isChecked }
+                    .map { it.expense }
+            }
+            .fold(listOf()) { acc, list -> acc + list }
+    }
+
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     class HeaderViewHolder(itemView: View) : ViewHolder(itemView)
