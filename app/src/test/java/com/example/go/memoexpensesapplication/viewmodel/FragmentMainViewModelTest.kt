@@ -39,13 +39,13 @@ class FragmentMainViewModelTest {
     }
 
     @Test
-    fun occurredGetAllExpensesAction_confirmExpensesFlowPost() {
+    fun occurredGetAllExpensesAction_confirmUpdateExpensesFlowPost() {
         val expenses = listOf(
             Expense("uid1", "tag1", 1, "note1"),
             Expense("uid2", "tag2", 2, "note2"),
             Expense("uid3", "tag3", 3, "note3")
         )
-        val subscriber = viewModel.expenses.test()
+        val subscriber = viewModel.updateExpenses.test()
         dispatcher.dispatch(MainAction.GetAllExpenses(expenses))
         subscriber
             .assertNoErrors()
@@ -53,33 +53,49 @@ class FragmentMainViewModelTest {
     }
 
     @Test
-    fun occurredAddExpenseAction_confirmAddExpenseFlowPost() {
+    fun occurredAddExpenseAction_confirmUpdateExpensesFlowPost() {
         val expense = Expense("uid1", "tag1", 1, "note1")
-        val subscriber = viewModel.addExpense.test()
+        val expected = listOf(expense)
+        val subscriber = viewModel.updateExpenses.test()
         dispatcher.dispatch(MainAction.AddExpense(expense))
         subscriber
             .assertNoErrors()
-            .assertValue(expense)
+            .assertValue(expected)
     }
 
     @Test
-    fun occurredEditExpenseAction_confirmEditExpenseFlowPost() {
-        val expense = Expense("uid1", "tag1", 1, "note1")
-        val subscriber = viewModel.editExpense.test()
+    fun occurredEditExpenseAction_confirmUpdateExpensesFlowPost() {
+        val expenses = listOf(
+            Expense("1", "uid1", "tag1", 1, "note1"),
+            Expense("2", "uid2", "tag2", 2, "note2"),
+            Expense("3", "uid3", "tag3", 3, "note3")
+        )
+        val expense = Expense("1", "uid4", "tag4", 4, "note4")
+        val expected = expenses - expenses[0] + expense
+        dispatcher.dispatch(MainAction.GetAllExpenses(expenses))
+
+        val subscriber = viewModel.updateExpenses.test()
         dispatcher.dispatch(MainAction.EditExpense(expense))
         subscriber
             .assertNoErrors()
-            .assertValue(expense)
+            .assertValue(expected)
     }
 
     @Test
-    fun occurredDeleteExpenseAction_confirmDeleteExpenseFlowPost() {
-        val expense = Expense("uid1", "tag1", 1, "note1")
-        val subscriber = viewModel.deleteExpense.test()
-        dispatcher.dispatch(MainAction.DeleteExpense(expense))
+    fun occurredDeleteExpenseAction_confirmUpdateExpensesFlowPost() {
+        val expenses = listOf(
+            Expense("uid1", "tag1", 1, "note1"),
+            Expense("uid2", "tag2", 2, "note2"),
+            Expense("uid3", "tag3", 3, "note3")
+        )
+        val expected = expenses - expenses[0]
+        dispatcher.dispatch(MainAction.GetAllExpenses(expenses))
+
+        val subscriber = viewModel.updateExpenses.test()
+        dispatcher.dispatch(MainAction.DeleteExpense(expenses[0]))
         subscriber
             .assertNoErrors()
-            .assertValue(expense)
+            .assertValue(expected)
     }
 
     @Test
