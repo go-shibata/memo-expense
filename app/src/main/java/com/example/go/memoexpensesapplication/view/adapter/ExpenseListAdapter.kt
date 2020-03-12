@@ -31,7 +31,15 @@ class ExpenseListAdapter(
         viewModel.expenses
             .observe(fragment, Observer { setData(it) })
         viewModel.isCheckable
-            .observe(fragment, Observer { notifyDataSetChanged() })
+            .observe(fragment, Observer { isCheckable ->
+                if (!isCheckable) {
+                    groupedData.values
+                        .forEach { checkableExpenses ->
+                            checkableExpenses.forEach { it.isChecked = false }
+                        }
+                }
+                notifyDataSetChanged()
+            })
     }
 
     private fun setData(data: List<Expense>) {
