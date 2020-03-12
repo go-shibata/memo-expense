@@ -6,6 +6,12 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+        <variable
+                name="viewModel"
+                type="com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel" />
+
         <variable
                 name="fragment"
                 type="com.example.go.memoexpensesapplication.fragment.MainFragment" />
@@ -29,6 +35,7 @@
                 android:layout_margin="@dimen/margin_mid"
                 android:onClick="@{() -> fragment.onClickAddExpense()}"
                 android:scaleType="center"
+                android:visibility="@{viewModel.isCheckable() ? View.GONE : View.VISIBLE}"
                 app:srcCompat="@drawable/ic_add" />
 
     </FrameLayout>

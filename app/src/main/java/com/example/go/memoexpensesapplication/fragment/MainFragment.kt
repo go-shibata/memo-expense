@@ -63,6 +63,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         binding = FragmentMainBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.fragment = this
+        binding.viewModel = viewModel
         return binding.root
     }
 
