@@ -31,10 +31,9 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     @Inject
     lateinit var factory: ViewModelFactory<FragmentMainViewModel>
 
-    private lateinit var expenseListAdapter: ExpenseListAdapter
-
     private val viewModel: FragmentMainViewModel by activityViewModels { factory }
     private lateinit var binding: FragmentMainBinding
+    private lateinit var expenseListAdapter: ExpenseListAdapter
 
     private lateinit var user: User
 
