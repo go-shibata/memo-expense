@@ -19,8 +19,6 @@ import com.example.go.memoexpensesapplication.model.User
 import com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter
 import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
 class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
@@ -96,6 +94,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.delete -> actionCreator.toggleCheckable()
             R.id.edit_tag -> actionCreator.moveToTagList()
         }
         return super.onOptionsItemSelected(item)

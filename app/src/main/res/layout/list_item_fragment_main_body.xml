@@ -4,37 +4,56 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
-                name="expense"
-                type="com.example.go.memoexpensesapplication.model.Expense" />
+                name="isCheckable"
+                type="Boolean" />
+
+        <variable
+                name="checkableExpense"
+                type="com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter.CheckableExpense" />
     </data>
 
     <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/height_expense_list_body"
             android:orientation="horizontal"
-            android:padding="@dimen/margin_mid">
+            android:paddingStart="@dimen/margin_mid"
+            android:paddingEnd="@dimen/margin_mid">
+
+        <CheckBox
+                android:id="@+id/checkbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="2"
+                android:checked="@={checkableExpense.checked}"
+                android:clickable="false"
+                android:focusable="false"
+                android:visibility="@{isCheckable ? View.VISIBLE : View.GONE}" />
 
         <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="2"
-                android:text="@{expense.tag}" />
+                android:text="@{checkableExpense.expense.tag}"
+                android:visibility="@{isCheckable ? View.GONE : View.VISIBLE}" />
 
         <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="3"
-                android:text="@{Integer.toString(expense.value)}" />
+                android:text="@{Integer.toString(checkableExpense.expense.value)}" />
 
         <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="3"
-                android:text="@{expense.note}" />
+                android:text="@{checkableExpense.expense.note}" />
 
     </LinearLayout>
 </layout>

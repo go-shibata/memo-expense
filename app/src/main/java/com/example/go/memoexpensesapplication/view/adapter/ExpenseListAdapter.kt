@@ -12,6 +12,7 @@ import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import kotlinx.android.synthetic.main.list_item_fragment_main_body.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -20,7 +21,7 @@ class ExpenseListAdapter(
     private val onClickExpenseListener: OnClickExpenseListener
 ) : RecyclerView.Adapter<ExpenseListAdapter.ViewHolder>() {
 
-    private var groupedData: SortedMap<String, ArrayList<Expense>> = sortedMapOf()
+    private var groupedData: SortedMap<String, ArrayList<CheckableExpense>> = sortedMapOf()
     private var groupedItemCount: SortedMap<String, Int> = sortedMapOf()
     private var hasHeader = false
     private var hasFooter = false
@@ -31,12 +32,17 @@ class ExpenseListAdapter(
         viewModel.updateExpenses
             .subscribe { expenses -> setData(expenses) }
             .addTo(compositeDisposable)
+        viewModel.toggleCheckable
+            .subscribe { notifyDataSetChanged() }
+            .addTo(compositeDisposable)
     }
 
     private fun setData(data: List<Expense>) {
         groupedData = data.groupBy { it.tag }
             .mapValues {
-                it.value.toCollection(ArrayList())
+                it.value
+                    .map { expense -> CheckableExpense(expense) }
+                    .toCollection(ArrayList())
             }.toSortedMap()
         groupedItemCount = groupedData
             .mapValues { it.value.count() + 1 }
@@ -85,15 +91,20 @@ class ExpenseListAdapter(
                 val data = groupedData[sectionKey]?.get(localPosition)
                     ?: throw RuntimeException("Invalid data")
                 holder.apply {
-                    binding.expense = data
+                    binding.isCheckable = viewModel.isCheckable
+                    binding.checkableExpense = data
                     itemView.setOnClickListener {
-                        onClickExpenseListener.onClickExpense(data)
+                        if (viewModel.isCheckable) {
+                            binding.root.checkbox.isChecked = !binding.root.checkbox.isChecked
+                        } else {
+                            onClickExpenseListener.onClickExpense(data.expense)
+                        }
                     }
                 }
             }
             is SectionViewHolder -> {
                 val header = groupedData[sectionKey]?.let { list ->
-                    Header(sectionKey, list.sumBy { it.value })
+                    Header(sectionKey, list.sumBy { it.expense.value })
                 } ?: throw RuntimeException("Invalid data")
                 holder.binding.header = header
             }
@@ -157,6 +168,11 @@ class ExpenseListAdapter(
     interface OnClickExpenseListener {
         fun onClickExpense(expense: Expense)
     }
+
+    data class CheckableExpense(
+        val expense: Expense,
+        var isChecked: Boolean = false
+    )
 
     data class Header(
         val tag: String,

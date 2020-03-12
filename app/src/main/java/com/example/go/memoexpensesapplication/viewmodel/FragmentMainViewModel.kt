@@ -16,11 +16,15 @@ class FragmentMainViewModel @Inject constructor(
 
     private var navigator: FragmentMainNavigator? = null
 
+    var isCheckable: Boolean = false
+        private set
     private var expenses: List<Expense> = emptyList()
 
     private val _updateExpenses = PublishProcessor.create<List<Expense>>()
     val updateExpenses: Flowable<List<Expense>> = _updateExpenses
     private val moveToTagList: Disposable
+    private val _toggleCheckable = PublishProcessor.create<Unit>()
+    val toggleCheckable: Flowable<Unit> = _toggleCheckable
 
     init {
         dispatcher.onGetAllExpenses
@@ -53,6 +57,10 @@ class FragmentMainViewModel @Inject constructor(
                 },
                 { throw it }
             )
+        dispatcher.onToggleCheckable
+            .map { isCheckable = !isCheckable }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(_toggleCheckable)
     }
 
     fun setNavigator(navigator: FragmentMainNavigator) {

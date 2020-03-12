@@ -30,6 +30,10 @@ class MainDispatcher @Inject constructor() : Dispatcher<MainAction<*>> {
         BehaviorProcessor.create()
     val onMoveToTagList: Flowable<MainAction.MoveToTagList> = dispatcherMoveToTagList
 
+    private val dispatcherToggleCheckable: FlowableProcessor<MainAction.ToggleCheckable> =
+        BehaviorProcessor.create()
+    val onToggleCheckable: Flowable<MainAction.ToggleCheckable> = dispatcherToggleCheckable
+
     override fun dispatch(action: MainAction<*>) {
         when (action) {
             is MainAction.GetAllExpenses -> dispatcherGetAllExpenses.onNext(action)
@@ -37,6 +41,7 @@ class MainDispatcher @Inject constructor() : Dispatcher<MainAction<*>> {
             is MainAction.EditExpense -> dispatcherEditExpense.onNext(action)
             is MainAction.DeleteExpense -> dispatcherDeleteExpense.onNext(action)
             is MainAction.MoveToTagList -> dispatcherMoveToTagList.onNext(action)
+            is MainAction.ToggleCheckable -> dispatcherToggleCheckable.onNext(action)
         }
     }
 }
