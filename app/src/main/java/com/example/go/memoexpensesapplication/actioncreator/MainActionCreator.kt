@@ -26,6 +26,12 @@ class MainActionCreator @Inject constructor(
         }
     }
 
+    fun editExpense(expense: Expense) {
+        database.editExpense(expense) {
+            dispatcher.dispatch(MainAction.EditExpense(expense))
+        }
+    }
+
     fun deleteExpense(expense: Expense) {
         database.deleteExpenses(expense) {
             dispatcher.dispatch(MainAction.DeleteExpense(expense))
@@ -34,5 +40,9 @@ class MainActionCreator @Inject constructor(
 
     fun moveToTagList() {
         dispatcher.dispatch(MainAction.MoveToTagList())
+    }
+
+    fun toggleCheckable() {
+        dispatcher.dispatch(MainAction.ToggleCheckable())
     }
 }

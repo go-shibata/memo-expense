@@ -6,4 +6,6 @@
     <dimen name="text_size_mid">16sp</dimen>
 
     <dimen name="btn_corner_radius">8dp</dimen>
+
+    <dimen name="height_expense_list_body">52dp</dimen>
 </resources>

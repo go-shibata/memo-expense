@@ -1,7 +1,6 @@
 package com.example.go.memoexpensesapplication.network
 
 import android.util.Log
-import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.model.Expense
 import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
@@ -30,6 +29,25 @@ class Database @Inject constructor() {
             }
     }
 
+    fun editExpense(expense: Expense, exec: (() -> Unit)? = null) {
+        val data = mapOf(
+            "uid" to expense.uid,
+            "tag" to expense.tag,
+            "value" to expense.value,
+            "note" to expense.note
+        )
+        getDatabase().collection(COLLECTION_EXPENSE)
+            .document(expense.id ?: throw RuntimeException("Document id not found"))
+            .set(data)
+            .addOnSuccessListener {
+                Log.d(LOG_TAG, "Document edited with ID: ${expense.id}")
+                exec?.invoke()
+            }
+            .addOnFailureListener {
+                Log.w(LOG_TAG, "Error editing document", it)
+            }
+    }
+
     fun readExpenses(uid: String, exec: ((List<Expense>) -> Unit)? = null) {
         getDatabase().collection(COLLECTION_EXPENSE)
             .whereEqualTo("uid", uid)
@@ -38,11 +56,10 @@ class Database @Inject constructor() {
                 val data = it.documents.map { item ->
                     Expense(
                         item.id,
-                        ExpenseViewType.BODY,
-                        item.get("uid") as String?,
-                        item.get("tag") as String?,
-                        (item.get("value") as Long?)?.toInt(),
-                        item.get("note") as String?
+                        item.get("uid") as String,
+                        item.get("tag") as String,
+                        (item.get("value") as Long).toInt(),
+                        item.get("note") as String
                     )
                 }
                 Log.d(LOG_TAG, "Get documents, size = ${it.size()}")

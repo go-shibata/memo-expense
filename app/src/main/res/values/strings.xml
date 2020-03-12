@@ -25,12 +25,22 @@
     <string name="fragment_main_add_tag">タグ</string>
     <string name="fragment_main_add_value">金額</string>
     <string name="fragment_main_add_note">メモ</string>
-    <string name="fragment_main_remove_title">要素の削除</string>
+    <string name="fragment_main_click_expense_title">%1$s : %2$d</string>
+    <string-array name="fragment_main_click_expense_selector">
+        <item>編集</item>
+        <item>削除</item>
+    </string-array>
+    <string name="fragment_main_edit_title">出費メモの編集</string>
+    <string name="fragment_main_edit_ok">編集</string>
+    <string name="fragment_main_remove_title">出費メモの削除</string>
     <string name="fragment_main_remove_message">%1$s : %2$d を削除しますか？</string>
     <string name="fragment_main_header_tag">タグ</string>
     <string name="fragment_main_header_value">金額</string>
     <string name="fragment_main_header_note">メモ</string>
     <string name="fragment_main_footer">以上</string>
+    <string name="fragment_main_menu_delete">メモの削除</string>
+    <string name="fragment_main_menu_delete_dialog_message">選択されたメモを削除しますか？</string>
+    <string name="fragment_main_menu_delete_checked_list_empty">メモが選択されていません</string>
     <string name="fragment_main_menu_tag_edit">タグの編集</string>
 
     <string name="fragment_tag_list_title">タグ一覧</string>
