@@ -12,8 +12,6 @@ import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainSe
 import com.example.go.memoexpensesapplication.fragment.MainFragment
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.list_item_fragment_main_body.view.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -29,12 +27,9 @@ class ExpenseListAdapter(
     private var hasHeader = false
     private var hasFooter = false
 
-    private val compositeDisposable = CompositeDisposable()
-
     init {
-        viewModel.updateExpenses
-            .subscribe { expenses -> setData(expenses) }
-            .addTo(compositeDisposable)
+        viewModel.expenses
+            .observe(fragment, Observer { setData(it) })
         viewModel.isCheckable
             .observe(fragment, Observer { notifyDataSetChanged() })
     }
