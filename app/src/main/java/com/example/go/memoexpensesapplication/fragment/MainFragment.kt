@@ -74,7 +74,7 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
         }
 
         expenseListAdapter =
-            ExpenseListAdapter(viewModel, this@MainFragment).apply {
+            ExpenseListAdapter(this, viewModel, this).apply {
                 setHeader()
                 setFooter()
             }

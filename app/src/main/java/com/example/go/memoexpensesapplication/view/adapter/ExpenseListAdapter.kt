@@ -3,11 +3,13 @@ package com.example.go.memoexpensesapplication.view.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainBodyBinding
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainSectionBinding
+import com.example.go.memoexpensesapplication.fragment.MainFragment
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -17,6 +19,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class ExpenseListAdapter(
+    fragment: MainFragment,
     private val viewModel: FragmentMainViewModel,
     private val onClickExpenseListener: OnClickExpenseListener
 ) : RecyclerView.Adapter<ExpenseListAdapter.ViewHolder>() {
@@ -32,9 +35,8 @@ class ExpenseListAdapter(
         viewModel.updateExpenses
             .subscribe { expenses -> setData(expenses) }
             .addTo(compositeDisposable)
-        viewModel.toggleCheckable
-            .subscribe { notifyDataSetChanged() }
-            .addTo(compositeDisposable)
+        viewModel.isCheckable
+            .observe(fragment, Observer { notifyDataSetChanged() })
     }
 
     private fun setData(data: List<Expense>) {
@@ -91,10 +93,10 @@ class ExpenseListAdapter(
                 val data = groupedData[sectionKey]?.get(localPosition)
                     ?: throw RuntimeException("Invalid data")
                 holder.apply {
-                    binding.isCheckable = viewModel.isCheckable
+                    binding.isCheckable = viewModel.isCheckable.value
                     binding.checkableExpense = data
                     itemView.setOnClickListener {
-                        if (viewModel.isCheckable) {
+                        if (viewModel.isCheckable.value == true) {
                             binding.root.checkbox.isChecked = !binding.root.checkbox.isChecked
                         } else {
                             onClickExpenseListener.onClickExpense(data.expense)
