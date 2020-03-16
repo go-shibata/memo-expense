@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.Preferences
 import com.example.go.memoexpensesapplication.R
@@ -22,7 +23,8 @@ import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
 import javax.inject.Inject
 
-class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
+class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener,
+    FragmentMainViewModel.FragmentMainNavigator {
     @Inject
     lateinit var actionCreator: MainActionCreator
 
@@ -89,17 +91,18 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.run {
-            user = getSerializable(TAG_USER) as? User ?: throw RuntimeException("Invalid arguments")
+        arguments?.let {
+            user = MainFragmentArgs.fromBundle(it).user
         } ?: throw RuntimeException("Invalid arguments")
 
         activity?.run {
             (this as AppCompatActivity).supportActionBar?.show()
             if (this is MainActivity) {
                 mainComponent.inject(this@MainFragment)
-                viewModel.setNavigator(this)
             } else throw RuntimeException("$this must be MainActivity")
         } ?: throw RuntimeException("Invalid activity")
+
+        viewModel.setMainNavigator(this)
 
         setHasOptionsMenu(true)
     }
@@ -249,17 +252,17 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
             .show((activity as AppCompatActivity).supportFragmentManager, null)
     }
 
-    companion object {
-        private const val TAG_USER = "USER"
+    override fun onTransitionTagList() {
+        view?.findNavController()?.navigate(
+            MainFragmentDirections.actionMainFragmentToTagListFragment()
+        )
+    }
 
+    companion object {
         private const val SELECT_EDIT = 0
         private const val SELECT_DELETE = 1
 
         @JvmStatic
-        fun newInstance(user: User) = MainFragment().apply {
-            arguments = Bundle().apply {
-                putSerializable(TAG_USER, user)
-            }
-        }
+        fun newInstance() = MainFragment()
     }
 }

@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.go.memoexpensesapplication.dispatcher.MainDispatcher
 import com.example.go.memoexpensesapplication.model.Expense
-import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -14,7 +13,7 @@ class FragmentMainViewModel @Inject constructor(
     dispatcher: MainDispatcher
 ) : ViewModel() {
 
-    private var navigator: FragmentMainNavigator? = null
+    private var mMainNavigator: FragmentMainNavigator? = null
 
     val isCheckable: MutableLiveData<Boolean> = MutableLiveData(false)
     val expenses: MutableLiveData<List<Expense>> = MutableLiveData(emptyList())
@@ -55,7 +54,7 @@ class FragmentMainViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-                    navigator?.onTransitionTagList()
+                    mMainNavigator?.onTransitionTagList()
                         ?: throw RuntimeException("Navigator must be set")
                 },
                 { throw it }
@@ -67,12 +66,16 @@ class FragmentMainViewModel @Inject constructor(
             }.addTo(compositeDisposable)
     }
 
-    fun setNavigator(navigator: FragmentMainNavigator) {
-        this.navigator = navigator
+    fun setMainNavigator(navigator: FragmentMainNavigator) {
+        this.mMainNavigator = navigator
     }
 
     override fun onCleared() {
         compositeDisposable.dispose()
         super.onCleared()
+    }
+
+    interface FragmentMainNavigator {
+        fun onTransitionTagList()
     }
 }
