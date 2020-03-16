@@ -6,11 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.databinding.ActivityMainBinding
 import com.example.go.memoexpensesapplication.di.component.*
-import com.example.go.memoexpensesapplication.navigator.FragmentMainNavigator
 
-class MainActivity :
-    AppCompatActivity(),
-    FragmentMainNavigator {
+class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
     lateinit var loginComponent: LoginComponent
@@ -25,8 +22,5 @@ class MainActivity :
         loginComponent = DaggerLoginComponent.create()
         mainComponent = DaggerMainComponent.create()
         tagListComponent = DaggerTagListComponent.create()
-    }
-
-    override fun onTransitionTagList() {
     }
 }
