@@ -6,6 +6,8 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
 
+apply plugin: 'androidx.navigation.safeargs'
+
 android {
     compileSdkVersion 29
     defaultConfig {
@@ -60,6 +62,12 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-compiler:2.26'
     kapt 'com.google.dagger:dagger-compiler:2.26'
     kaptTest 'com.google.dagger:dagger-compiler:2.26'
+
+    // navigation
+    implementation 'android.arch.navigation:navigation-fragment:1.0.0'
+    implementation 'android.arch.navigation:navigation-ui:1.0.0'
+    implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0'
+    implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0'
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'android.arch.core:core-testing:1.1.1' // for LiveData

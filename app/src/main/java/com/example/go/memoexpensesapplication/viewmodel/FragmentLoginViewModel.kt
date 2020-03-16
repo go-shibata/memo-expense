@@ -3,7 +3,7 @@ package com.example.go.memoexpensesapplication.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.go.memoexpensesapplication.dispatcher.LoginDispatcher
-import com.example.go.memoexpensesapplication.navigator.FragmentLoginNavigator
+import com.example.go.memoexpensesapplication.model.User
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -14,7 +14,7 @@ class FragmentLoginViewModel @Inject constructor(
     dispatcher: LoginDispatcher
 ) : ViewModel() {
 
-    private var navigator: FragmentLoginNavigator? = null
+    private var mLoginNavigator: FragmentLoginNavigator? = null
 
     val mail: MutableLiveData<String> = MutableLiveData()
     val password: MutableLiveData<String> = MutableLiveData()
@@ -24,7 +24,6 @@ class FragmentLoginViewModel @Inject constructor(
     val authenticationFail: Flowable<Exception?> = _authenticationFail
     private val _createUserFail = PublishProcessor.create<Exception?>()
     val createUserFail: Flowable<Exception?> = _createUserFail
-    private val autoLoginFail: Disposable
 
     init {
         login = dispatcher.onLogin
@@ -32,7 +31,8 @@ class FragmentLoginViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { user ->
-                    navigator?.onLoggedIn(user) ?: throw RuntimeException("Navigator must be set")
+                    mLoginNavigator?.onLoggedIn(user)
+                        ?: throw RuntimeException("Navigator must be set")
                 },
                 { throw it }
             )
@@ -44,25 +44,18 @@ class FragmentLoginViewModel @Inject constructor(
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(_authenticationFail)
-        autoLoginFail = dispatcher.onAutoLoginFail
-            .map { action -> action.data }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    navigator?.onAutoLoginFailed()
-                        ?: throw RuntimeException("Navigator must be set")
-                },
-                { throw it }
-            )
     }
 
-    fun setNavigator(navigator: FragmentLoginNavigator) {
-        this.navigator = navigator
+    fun setLoginNavigator(navigator: FragmentLoginNavigator) {
+        this.mLoginNavigator = navigator
     }
 
     override fun onCleared() {
         login.dispose()
-        autoLoginFail.dispose()
         super.onCleared()
+    }
+
+    interface FragmentLoginNavigator {
+        fun onLoggedIn(user: User)
     }
 }

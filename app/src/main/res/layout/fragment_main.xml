@@ -14,13 +14,13 @@
 
         <variable
                 name="fragment"
-                type="com.example.go.memoexpensesapplication.fragment.MainFragment" />
+                type="com.example.go.memoexpensesapplication.view.fragment.MainFragment" />
     </data>
 
     <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".fragment.MainFragment">
+            tools:context=".view.fragment.MainFragment">
 
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/expense_list"

@@ -1,4 +1,4 @@
-package com.example.go.memoexpensesapplication.fragment
+package com.example.go.memoexpensesapplication.view.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
-import com.example.go.memoexpensesapplication.activity.MainActivity
 import com.example.go.memoexpensesapplication.databinding.FragmentLoginBinding
 import com.example.go.memoexpensesapplication.di.ViewModelFactory
+import com.example.go.memoexpensesapplication.model.User
+import com.example.go.memoexpensesapplication.view.activity.MainActivity
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -22,14 +24,14 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
-class LoginFragment : Fragment() {
+class LoginFragment : Fragment(), FragmentLoginViewModel.FragmentLoginNavigator {
     @Inject
     lateinit var actionCreator: LoginActionCreator
 
     @Inject
     lateinit var factory: ViewModelFactory<FragmentLoginViewModel>
 
-    private val viewModel: FragmentLoginViewModel by activityViewModels { factory }
+    private val viewModel: FragmentLoginViewModel by viewModels { factory }
     private lateinit var binding: FragmentLoginBinding
     private val compositeDisposable = CompositeDisposable()
 
@@ -40,10 +42,10 @@ class LoginFragment : Fragment() {
             (this as AppCompatActivity).supportActionBar?.show()
             if (this is MainActivity) {
                 loginComponent.inject(this@LoginFragment)
-                viewModel.setNavigator(this)
             } else throw RuntimeException("$this must be MainActivity")
         } ?: throw RuntimeException("Invalid Activity")
 
+        viewModel.setLoginNavigator(this)
         viewModel.createUserFail
             .subscribe { exception -> makeToastForLoginFailure(exception, Failure.CREATE_USER) }
             .addTo(compositeDisposable)
@@ -114,6 +116,12 @@ class LoginFragment : Fragment() {
             is FirebaseAuthInvalidUserException -> getString(R.string.fragment_login_cannot_find_user)
             else -> default
         }
+    }
+
+    override fun onLoggedIn(user: User) {
+        view?.findNavController()?.navigate(
+            LoginFragmentDirections.actionLoginFragmentToMainFragment(user)
+        )
     }
 
     private enum class Failure {
