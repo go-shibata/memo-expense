@@ -14,7 +14,6 @@ class FragmentLoginViewModel @Inject constructor(
     dispatcher: LoginDispatcher
 ) : ViewModel() {
 
-    private var mSplashNavigator: FragmentSplashNavigator? = null
     private var mLoginNavigator: FragmentLoginNavigator? = null
 
     val mail: MutableLiveData<String> = MutableLiveData()
@@ -25,7 +24,6 @@ class FragmentLoginViewModel @Inject constructor(
     val authenticationFail: Flowable<Exception?> = _authenticationFail
     private val _createUserFail = PublishProcessor.create<Exception?>()
     val createUserFail: Flowable<Exception?> = _createUserFail
-    private val autoLoginFail: Disposable
 
     init {
         login = dispatcher.onLogin
@@ -33,9 +31,8 @@ class FragmentLoginViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { user ->
-                    mSplashNavigator?.onLoggedIn(user) ?: run {
-                        mLoginNavigator?.onLoggedIn(user)
-                    } ?: throw RuntimeException("Navigator must be set")
+                    mLoginNavigator?.onLoggedIn(user)
+                        ?: throw RuntimeException("Navigator must be set")
                 },
                 { throw it }
             )
@@ -47,39 +44,15 @@ class FragmentLoginViewModel @Inject constructor(
             .map { action -> action.data }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(_authenticationFail)
-        autoLoginFail = dispatcher.onAutoLoginFail
-            .map { action -> action.data }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    mSplashNavigator?.onAutoLoginFailed()
-                        ?: throw RuntimeException("Navigator must be set")
-                },
-                { throw it }
-            )
     }
 
     fun setLoginNavigator(navigator: FragmentLoginNavigator) {
         this.mLoginNavigator = navigator
     }
 
-    fun setSplashNavigator(navigator: FragmentSplashNavigator) {
-        this.mSplashNavigator = navigator
-    }
-
-    fun removeSplashNavigator() {
-        this.mSplashNavigator = null
-    }
-
     override fun onCleared() {
         login.dispose()
-        autoLoginFail.dispose()
         super.onCleared()
-    }
-
-    interface FragmentSplashNavigator {
-        fun onAutoLoginFailed()
-        fun onLoggedIn(user: User)
     }
 
     interface FragmentLoginNavigator {
