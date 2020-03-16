@@ -89,8 +89,8 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.run {
-            user = getSerializable(TAG_USER) as? User ?: throw RuntimeException("Invalid arguments")
+        arguments?.let {
+            user = MainFragmentArgs.fromBundle(it).user
         } ?: throw RuntimeException("Invalid arguments")
 
         activity?.run {
@@ -250,16 +250,10 @@ class MainFragment : Fragment(), ExpenseListAdapter.OnClickExpenseListener {
     }
 
     companion object {
-        private const val TAG_USER = "USER"
-
         private const val SELECT_EDIT = 0
         private const val SELECT_DELETE = 1
 
         @JvmStatic
-        fun newInstance(user: User) = MainFragment().apply {
-            arguments = Bundle().apply {
-                putSerializable(TAG_USER, user)
-            }
-        }
+        fun newInstance() = MainFragment()
     }
 }
