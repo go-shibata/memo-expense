@@ -3,13 +3,13 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".fragment.TagListFragment">
+        tools:context=".view.fragment.TagListFragment">
 
     <data>
 
         <variable
                 name="fragment"
-                type="com.example.go.memoexpensesapplication.fragment.TagListFragment" />
+                type="com.example.go.memoexpensesapplication.view.fragment.TagListFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

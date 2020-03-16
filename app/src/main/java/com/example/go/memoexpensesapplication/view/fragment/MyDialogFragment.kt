@@ -1,4 +1,4 @@
-package com.example.go.memoexpensesapplication.fragment
+package com.example.go.memoexpensesapplication.view.fragment
 
 import android.app.Dialog
 import android.os.Bundle

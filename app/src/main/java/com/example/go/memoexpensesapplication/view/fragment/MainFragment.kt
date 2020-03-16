@@ -1,4 +1,4 @@
-package com.example.go.memoexpensesapplication.fragment
+package com.example.go.memoexpensesapplication.view.fragment
 
 import android.os.Bundle
 import android.view.*
@@ -12,12 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.go.memoexpensesapplication.Preferences
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.MainActionCreator
-import com.example.go.memoexpensesapplication.activity.MainActivity
 import com.example.go.memoexpensesapplication.databinding.DialogViewFragmentMainAddBinding
 import com.example.go.memoexpensesapplication.databinding.FragmentMainBinding
 import com.example.go.memoexpensesapplication.di.ViewModelFactory
 import com.example.go.memoexpensesapplication.model.Expense
 import com.example.go.memoexpensesapplication.model.User
+import com.example.go.memoexpensesapplication.view.activity.MainActivity
 import com.example.go.memoexpensesapplication.view.adapter.ExpenseListAdapter
 import com.example.go.memoexpensesapplication.view.adapter.TagListSpinnerAdapter
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel

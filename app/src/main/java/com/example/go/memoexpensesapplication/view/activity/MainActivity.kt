@@ -1,4 +1,4 @@
-package com.example.go.memoexpensesapplication.activity
+package com.example.go.memoexpensesapplication.view.activity
 
 import android.os.Bundle
 import android.view.LayoutInflater

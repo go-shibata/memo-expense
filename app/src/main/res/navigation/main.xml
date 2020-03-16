@@ -7,7 +7,7 @@
 
     <fragment
             android:id="@+id/splashFragment"
-            android:name="com.example.go.memoexpensesapplication.fragment.SplashFragment"
+            android:name="com.example.go.memoexpensesapplication.view.fragment.SplashFragment"
             android:label="fragment_splash"
             tools:layout="@layout/fragment_splash">
         <action
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
             android:id="@+id/loginFragment"
-            android:name="com.example.go.memoexpensesapplication.fragment.LoginFragment"
+            android:name="com.example.go.memoexpensesapplication.view.fragment.LoginFragment"
             android:label="fragment_login"
             tools:layout="@layout/fragment_login">
         <action
@@ -31,7 +31,7 @@
     </fragment>
     <fragment
             android:id="@+id/mainFragment"
-            android:name="com.example.go.memoexpensesapplication.fragment.MainFragment"
+            android:name="com.example.go.memoexpensesapplication.view.fragment.MainFragment"
             android:label="MainFragment">
         <action
                 android:id="@+id/action_mainFragment_to_tagListFragment"
@@ -42,7 +42,7 @@
     </fragment>
     <fragment
             android:id="@+id/tagListFragment"
-            android:name="com.example.go.memoexpensesapplication.fragment.TagListFragment"
+            android:name="com.example.go.memoexpensesapplication.view.fragment.TagListFragment"
             android:label="fragment_tag_list"
             tools:layout="@layout/fragment_tag_list" />
 </navigation>

@@ -1,4 +1,4 @@
-package com.example.go.memoexpensesapplication.fragment
+package com.example.go.memoexpensesapplication.view.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,10 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
-import com.example.go.memoexpensesapplication.activity.MainActivity
 import com.example.go.memoexpensesapplication.databinding.FragmentLoginBinding
 import com.example.go.memoexpensesapplication.di.ViewModelFactory
 import com.example.go.memoexpensesapplication.model.User
+import com.example.go.memoexpensesapplication.view.activity.MainActivity
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException

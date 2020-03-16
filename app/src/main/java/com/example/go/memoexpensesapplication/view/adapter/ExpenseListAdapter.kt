@@ -9,8 +9,8 @@ import com.example.go.memoexpensesapplication.R
 import com.example.go.memoexpensesapplication.constant.ExpenseViewType
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainBodyBinding
 import com.example.go.memoexpensesapplication.databinding.ListItemFragmentMainSectionBinding
-import com.example.go.memoexpensesapplication.fragment.MainFragment
 import com.example.go.memoexpensesapplication.model.Expense
+import com.example.go.memoexpensesapplication.view.fragment.MainFragment
 import com.example.go.memoexpensesapplication.viewmodel.FragmentMainViewModel
 import kotlinx.android.synthetic.main.list_item_fragment_main_body.view.*
 import java.util.*
