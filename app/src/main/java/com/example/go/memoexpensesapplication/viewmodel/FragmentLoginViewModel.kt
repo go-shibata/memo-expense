@@ -33,8 +33,9 @@ class FragmentLoginViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { user ->
-                    mLoginNavigator?.onLoggedIn(user)
-                        ?: throw RuntimeException("Navigator must be set")
+                    mSplashNavigator?.onLoggedIn(user) ?: run {
+                        mLoginNavigator?.onLoggedIn(user)
+                    } ?: throw RuntimeException("Navigator must be set")
                 },
                 { throw it }
             )
@@ -66,6 +67,10 @@ class FragmentLoginViewModel @Inject constructor(
         this.mSplashNavigator = navigator
     }
 
+    fun removeSplashNavigator() {
+        this.mSplashNavigator = null
+    }
+
     override fun onCleared() {
         login.dispose()
         autoLoginFail.dispose()
@@ -74,6 +79,7 @@ class FragmentLoginViewModel @Inject constructor(
 
     interface FragmentSplashNavigator {
         fun onAutoLoginFailed()
+        fun onLoggedIn(user: User)
     }
 
     interface FragmentLoginNavigator {

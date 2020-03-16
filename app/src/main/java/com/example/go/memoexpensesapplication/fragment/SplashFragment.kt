@@ -12,6 +12,7 @@ import com.example.go.memoexpensesapplication.actioncreator.LoginActionCreator
 import com.example.go.memoexpensesapplication.activity.MainActivity
 import com.example.go.memoexpensesapplication.databinding.FragmentSplashBinding
 import com.example.go.memoexpensesapplication.di.ViewModelFactory
+import com.example.go.memoexpensesapplication.model.User
 import com.example.go.memoexpensesapplication.viewmodel.FragmentLoginViewModel
 import javax.inject.Inject
 
@@ -53,8 +54,15 @@ class SplashFragment : Fragment(), FragmentLoginViewModel.FragmentSplashNavigato
     }
 
     override fun onAutoLoginFailed() {
+        viewModel.removeSplashNavigator()
         view?.findNavController()?.navigate(
             SplashFragmentDirections.actionSplashFragmentToLoginFragment()
+        )
+    }
+
+    override fun onLoggedIn(user: User) {
+        view?.findNavController()?.navigate(
+            SplashFragmentDirections.actionSplashFragmentToMainFragment(user)
         )
     }
 
